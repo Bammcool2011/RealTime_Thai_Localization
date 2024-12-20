@@ -428,18 +428,22 @@ namespace RealTime.Patches
                     {
                         instance2.m_districts.m_buffer[district].m_servicePoliciesEffect |= DistrictPolicies.Services.HelicopterPriority;
                         offer.Active = false;
-                        Singleton<TransferManager>.instance.AddOutgoingOffer(TransferManager.TransferReason.Sick2, offer);
+                        reason = TransferManager.TransferReason.Sick2;
                     }
                     else if (SteamHelper.IsDLCOwned(SteamHelper.DLC.NaturalDisastersDLC) && ((instance.m_buildings.m_buffer[sourceBuilding].m_flags & Building.Flags.RoadAccessFailed) != 0 || Singleton<SimulationManager>.instance.m_randomizer.Int32(20u) == 0))
                     {
                         offer.Active = false;
-                        Singleton<TransferManager>.instance.AddOutgoingOffer(TransferManager.TransferReason.Sick2, offer);
+                        reason = TransferManager.TransferReason.Sick2;
                     }
                     else
                     {
                         offer.Active = Singleton<SimulationManager>.instance.m_randomizer.Int32(2u) == 0;
-                        Singleton<TransferManager>.instance.AddOutgoingOffer(TransferManager.TransferReason.Sick, offer);
+                        reason = TransferManager.TransferReason.Sick;
                     }
+
+                    Singleton<TransferManager>.instance.AddOutgoingOffer(reason, offer);
+
+                    Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenID} is sick, requesting {reason}, is offer active: {offer.Active}");
 
                     return true;
                 }
