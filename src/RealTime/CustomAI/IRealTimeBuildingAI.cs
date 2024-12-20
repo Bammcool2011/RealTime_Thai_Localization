@@ -101,5 +101,13 @@ namespace RealTime.CustomAI
         /// <returns>An ID of the first found building, or 0 if none found.</returns>
         ushort FindActiveCafeteria(ushort searchAreaCenterBuilding, float maxDistance);
 
+        /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is going to get closed in one houer or less
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> f the building with the specified <paramref name="buildingId"/> is going to get closed in one houer or less, <c>false</c>.
+        /// </returns>
+        bool IsBuildingClosingSoon(ushort buildingId);
     }
 }

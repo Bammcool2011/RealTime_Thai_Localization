@@ -6,6 +6,7 @@ namespace RealTime.CustomAI
     using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
+    using ICities;
     using RealTime.Config;
     using RealTime.GameConnection;
     using RealTime.Simulation;
@@ -996,7 +997,7 @@ namespace RealTime.CustomAI
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>
-        ///   <c>true</c> f the building with the specified <paramref name="buildingId"/> is a school building otherwise, <c>false</c>.
+        ///   <c>true</c> if the building with the specified <paramref name="buildingId"/> is a school building otherwise, <c>false</c>.
         /// </returns>
         public bool IsSchoolBuilding(ushort buildingId)
         {
@@ -1006,6 +1007,67 @@ namespace RealTime.CustomAI
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is going to get closed in one houer or less
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> f the building with the specified <paramref name="buildingId"/> is going to get closed in one houer or less, <c>false</c>.
+        /// </returns>
+        public bool IsBuildingClosingSoon(ushort buildingId)
+        {
+            var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
+            if(!IsBuildingWorking(buildingId))
+            {
+                return false;
+            }
+            if(workTime.WorkAtNight)
+            {
+                return false;
+            }
+            if (workTime.HasContinuousWorkShift)
+            {
+                if (workTime.WorkShifts == 2)
+                {
+                    return false;
+                }
+                if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < 19f)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+            else
+            {
+                var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+                if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
+                {
+                    if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < (config.SchoolEnd - 1f))
+                    {
+                        return false;
+                    }
+                    if (workTime.WorkShifts == 2 && timeInfo.CurrentHour < 21f)
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+                else
+                {
+                    if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < (config.WorkEnd - 1f))
+                    {
+                        return false;
+                    }
+                    if (workTime.WorkShifts == 2 && timeInfo.CurrentHour < (config.GoToSleepHour - 1f))
+                    {
+                        return false;
+                    }
+                    return true;
+                }
+            }
         }
 
         /// <summary>
@@ -1155,8 +1217,7 @@ namespace RealTime.CustomAI
                     }
                     else if (workTime.WorkShifts == 2)
                     {
-                        // universities - might have night classes closes at 10 pm
-                        return currentHour >= startHour - timeBeforeWork && currentHour < 22f;
+                        return currentHour >= startHour - timeBeforeWork && currentHour < config.GoToSleepHour;
                     }
                     else if (workTime.WorkShifts == 3)
                     {
