@@ -152,7 +152,7 @@ namespace RealTime.CustomAI
             return false;
         }
 
-        private ScheduleAction UpdateCitizenState(ref TCitizen citizen, ref CitizenSchedule schedule)
+        private ScheduleAction UpdateCitizenState(uint citizenId, ref TCitizen citizen, ref CitizenSchedule schedule)
         {
             if (schedule.CurrentState == ResidentState.Ignored)
             {
@@ -166,6 +166,7 @@ namespace RealTime.CustomAI
             }
 
             var location = CitizenProxy.GetLocation(ref citizen);
+            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} location is {location}");
             if (location == Citizen.Location.Moving)
             {
                 if (CitizenMgr.InstanceHasFlags(
@@ -194,6 +195,8 @@ namespace RealTime.CustomAI
             }
 
             var buildingService = BuildingMgr.GetBuildingService(currentBuilding);
+            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} current building is {currentBuilding} with service {buildingService}");
+            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} last scheduled state is {schedule.LastScheduledState}");
             switch (location)
             {
                 case Citizen.Location.Home:
@@ -243,7 +246,7 @@ namespace RealTime.CustomAI
                         case ItemClass.Service.Tourism:
                         case ItemClass.Service.Commercial
                             when BuildingMgr.GetBuildingSubService(currentBuilding) == ItemClass.SubService.CommercialLeisure
-                                && schedule.WorkStatus != WorkStatus.Working:
+                                && schedule.WorkStatus != WorkStatus.Working:          
                             if(schedule.LastScheduledState == ResidentState.GoToRelax)
                             {
                                 schedule.CurrentState = ResidentState.Relaxing;
@@ -338,7 +341,7 @@ namespace RealTime.CustomAI
             if(schedule.WorkBuilding != 0 && schedule.WorkShift == WorkShift.Event && schedule.ScheduledState != ResidentState.GoToWork)
             {
                 var buildingEvent = EventMgr.GetCityEvent(schedule.WorkBuilding);
-                if(buildingEvent != null && TimeInfo.Now.TimeOfDay.TotalHours > schedule.WorkShiftEndHour)
+                if(buildingEvent != null && TimeInfo.CurrentHour > schedule.WorkShiftEndHour)
                 {
                     CitizenProxy.SetWorkplace(ref citizen, citizenId, 0);
                 }
@@ -610,6 +613,12 @@ namespace RealTime.CustomAI
             ref var schedule = ref residentSchedules[citizenId];
             var citizen = CitizenManager.instance.m_citizens.m_buffer[citizenId];
 
+            // vacation can start only between midnight and 2am
+            if (TimeInfo.CurrentHour <= 23.85f || TimeInfo.CurrentHour >= 2f)
+            {
+                return false;
+            }
+
             if ((citizen.m_flags & Citizen.Flags.Student) != 0)
             {
                 if (schedule.SchoolBuilding == 0)
@@ -674,8 +683,8 @@ namespace RealTime.CustomAI
             // But we intentionally don't avoid this - let's add some randomness.
             if ((schedule.SchoolStatus == SchoolStatus.OnVacation || schedule.WorkStatus == WorkStatus.OnVacation) && schedule.VacationDaysLeft > 0)
             {
-                // vacation can end between midnight and 2am
-                if(TimeInfo.CurrentHour <= 23.85f || TimeInfo.CurrentHour >= 2f)
+                // vacation can end only between midnight and 2am
+                if (TimeInfo.CurrentHour <= 23.85f || TimeInfo.CurrentHour >= 2f)
                 {
                     return;
                 }
