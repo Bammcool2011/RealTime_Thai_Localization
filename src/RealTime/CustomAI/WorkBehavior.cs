@@ -96,7 +96,7 @@ namespace RealTime.CustomAI
                     {
                         // if the building has an upcoming event, assign new workers to the event
                         var buildingEvent = eventManager.GetCityEvent(schedule.WorkBuilding);
-                        workShift = buildingEvent != null && timeInfo.Now.TimeOfDay.TotalHours < buildingEvent.StartTime.TimeOfDay.TotalHours - 1 ? WorkShift.Event : GetWorkShift(workTime);
+                        workShift = buildingEvent != null && timeInfo.CurrentHour < buildingEvent.StartTime.TimeOfDay.TotalHours - 1 ? WorkShift.Event : GetWorkShift(workTime);
                     }
                     workBegin = config.WorkBegin;
                     workEnd = config.WorkEnd;
@@ -171,20 +171,27 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if the citizen should go to work; otherwise, <c>false</c>.</returns>
         public bool ShouldScheduleGoToWork(ref CitizenSchedule schedule)
         {
+            Log.Debug(LogCategory.Schedule, $"  - current status is {schedule.CurrentState}");
+
             if (schedule.CurrentState == ResidentState.AtWork)
             {
                 return false;
             }
 
-            var now = timeInfo.Now;
-            if (config.IsWeekendEnabled && now.IsWeekend() && !schedule.WorksOnWeekends)
+            Log.Debug(LogCategory.Schedule, $"  - option IsWeekendEnabled is {config.IsWeekendEnabled}, weekend is {timeInfo.Now.IsWeekend()}, works on weekends is {schedule.WorksOnWeekends}");
+
+            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend() && !schedule.WorksOnWeekends)
             {
                 return false;
             }
 
             float halfShiftLength = (schedule.WorkShiftEndHour - schedule.WorkShiftStartHour) / 2;
 
-            return now.TimeOfDay.TotalHours + halfShiftLength < schedule.WorkShiftEndHour;
+            Log.Debug(LogCategory.Schedule, $"  - halfShiftLength is {halfShiftLength} and current hour is {timeInfo.CurrentHour}");
+
+            Log.Debug(LogCategory.Schedule, $"  - result is {timeInfo.CurrentHour + halfShiftLength < schedule.WorkShiftEndHour}");
+
+            return timeInfo.CurrentHour + halfShiftLength < schedule.WorkShiftEndHour;
         }
 
 

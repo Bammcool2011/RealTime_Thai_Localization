@@ -101,18 +101,27 @@ namespace RealTime.CustomAI
         /// <returns><c>true</c> if the citizen should go to school; otherwise, <c>false</c>.</returns>
         public bool ShouldScheduleGoToSchool(ref CitizenSchedule schedule)
         {
+            Log.Debug(LogCategory.Schedule, $"  - current status is {schedule.CurrentState}");
+
             if (schedule.CurrentState == ResidentState.AtSchool)
             {
                 return false;
             }
 
-            var now = timeInfo.Now;
-            if (config.IsWeekendEnabled && now.IsWeekend())
+            Log.Debug(LogCategory.Schedule, $"  - option IsWeekendEnabled is {config.IsWeekendEnabled}, weekend is {timeInfo.Now.IsWeekend()}");
+
+            if (config.IsWeekendEnabled && timeInfo.Now.IsWeekend())
             {
                 return false;
             }
 
-            return true;
+            float halfClassLength = (schedule.SchoolClassEndHour - schedule.SchoolClassStartHour) / 2;
+
+            Log.Debug(LogCategory.Schedule, $"  - halfClassLength is {halfClassLength} and current hour is {timeInfo.CurrentHour}");
+
+            Log.Debug(LogCategory.Schedule, $"  - result is {timeInfo.CurrentHour + halfClassLength < schedule.SchoolClassEndHour}");
+
+            return timeInfo.CurrentHour + halfClassLength < schedule.SchoolClassEndHour;
         }
 
         /// <summary>Updates the citizen's school schedule by determining the time for going to school.</summary>
