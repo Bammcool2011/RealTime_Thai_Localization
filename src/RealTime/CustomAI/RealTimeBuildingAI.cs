@@ -1010,11 +1010,11 @@ namespace RealTime.CustomAI
         }
 
         /// <summary>
-        /// Determines whether the building with the specified <paramref name="buildingId"/> is going to get closed in one houer or less
+        /// Determines whether the building with the specified <paramref name="buildingId"/> is going to get closed in two hours or less
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>
-        ///   <c>true</c> f the building with the specified <paramref name="buildingId"/> is going to get closed in one houer or less, <c>false</c>.
+        ///   <c>true</c> f the building with the specified <paramref name="buildingId"/> is going to get closed in two hours or less, <c>false</c>.
         /// </returns>
         public bool IsBuildingClosingSoon(ushort buildingId)
         {
@@ -1033,7 +1033,7 @@ namespace RealTime.CustomAI
                 {
                     return false;
                 }
-                if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < 19f)
+                if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < 18f)
                 {
                     return false;
                 }
@@ -1045,11 +1045,11 @@ namespace RealTime.CustomAI
                 var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
                 if (building.Info.m_class.m_service == ItemClass.Service.Education || building.Info.m_class.m_service == ItemClass.Service.PlayerEducation)
                 {
-                    if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < (config.SchoolEnd - 1f))
+                    if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < (config.SchoolEnd - 2f))
                     {
                         return false;
                     }
-                    if (workTime.WorkShifts == 2 && timeInfo.CurrentHour < 21f)
+                    if (workTime.WorkShifts == 2 && timeInfo.CurrentHour < 20f)
                     {
                         return false;
                     }
@@ -1057,11 +1057,11 @@ namespace RealTime.CustomAI
                 }
                 else
                 {
-                    if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < (config.WorkEnd - 1f))
+                    if (workTime.WorkShifts == 1 && timeInfo.CurrentHour < (config.WorkEnd - 2f))
                     {
                         return false;
                     }
-                    if (workTime.WorkShifts == 2 && timeInfo.CurrentHour < (config.GoToSleepHour - 1f))
+                    if (workTime.WorkShifts == 2 && timeInfo.CurrentHour < (config.GoToSleepHour - 2f))
                     {
                         return false;
                     }
