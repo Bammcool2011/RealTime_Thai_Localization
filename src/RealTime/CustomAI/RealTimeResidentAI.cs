@@ -96,7 +96,7 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            switch (UpdateCitizenState(ref citizen, ref schedule))
+            switch (UpdateCitizenState(citizenId, ref citizen, ref schedule))
             {
                 case ScheduleAction.Ignore:
                     return;
@@ -136,7 +136,7 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState} and the scheduled state is {schedule.ScheduledState}");
+            Log.Debug(LogCategory.State, TimeInfo.Now, $"Citizen {citizenId} is in state {schedule.CurrentState} and the scheduled state is {schedule.ScheduledState} and the last scheduled state is {schedule.LastScheduledState}");
             bool updated = schedule.ScheduledState != ResidentState.GoToShelter && schedule.CurrentState != ResidentState.InShelter && UpdateCitizenSchedule(ref schedule, citizenId, ref citizen);
             ExecuteCitizenSchedule(ref schedule, instance, citizenId, ref citizen, updated);
         }
