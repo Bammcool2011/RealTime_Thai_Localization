@@ -2,6 +2,7 @@
 
 namespace RealTime.Patches
 {
+    using System;
     using ColossalFramework;
     using HarmonyLib;
     using RealTime.CustomAI;
@@ -33,6 +34,15 @@ namespace RealTime.Patches
                 }
                 if (__instance is ResidentAI)
                 {
+                    if (!RealTimeBuildingAI.IsBuildingWorking(targetBuilding))
+                    {
+                        var target_building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[targetBuilding];
+                        if(target_building.Info.GetAI() is SchoolAI)
+                        {
+                            Log.Debug(LogCategory.Movement, $"Citizen Id is {citizenID}");
+                            Log.Debug(LogCategory.Movement, Environment.StackTrace);
+                        }
+                    }
                     var instance = Singleton<CitizenManager>.instance;
                     ref var schedule = ref RealTimeResidentAI.GetCitizenSchedule(citizenID);
                     schedule.FindVisitPlaceAttempts = 0;
