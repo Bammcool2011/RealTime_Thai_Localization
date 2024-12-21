@@ -159,7 +159,7 @@ namespace RealTime.CustomAI
         {
             int hours = (int)(lunchBegin - timeInfo.Now).TotalHours;
 
-            if (hours >= 2 && schedule.SchoolStatus == SchoolStatus.Studying
+            if (hours >= 2.5 && schedule.SchoolStatus == SchoolStatus.Studying
                 && schedule.SchoolClass == SchoolClass.DayClass
                 && WillGoToLunch(schoolBuilding))
             {
@@ -199,7 +199,14 @@ namespace RealTime.CustomAI
 
             Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} time is {time}");
 
-            float departureHour = schedule.SchoolClassEndHour + time + 0.1f;
+            float departureHour = schedule.SchoolClassEndHour + time;
+
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} departureHour is {departureHour}");
+
+            if (departureHour < timeInfo.CurrentHour)
+            {
+                departureHour = timeInfo.CurrentHour;
+            }
 
             Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} departureHour is {departureHour} and future hour is {timeInfo.Now.FutureHour(departureHour):dd.MM.yy HH:mm}");
 

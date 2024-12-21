@@ -252,7 +252,7 @@ namespace RealTime.CustomAI
         {
             int hours = (int)(lunchBegin - timeInfo.Now).TotalHours;
 
-            if (hours >= 2 && schedule.WorkStatus == WorkStatus.Working
+            if (hours >= 2.5 && schedule.WorkStatus == WorkStatus.Working
                 && (schedule.WorkShift == WorkShift.First || schedule.WorkShift == WorkShift.ContinuousDay)
                 && WillGoToLunch(citizenAge))
             {
@@ -293,7 +293,14 @@ namespace RealTime.CustomAI
 
             Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} time is {time}");
 
-            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge) + time + 0.1f;
+            float departureHour = schedule.WorkShiftEndHour + GetOvertime(citizenAge) + time;
+
+            Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} departureHour is {departureHour}");
+
+            if (departureHour < timeInfo.CurrentHour)
+            {
+                departureHour = timeInfo.CurrentHour;
+            }
 
             Log.Debug(LogCategory.Schedule, timeInfo.Now, $"The Citizen {citizenId} departureHour is {departureHour} and future hour is {timeInfo.Now.FutureHour(departureHour):dd.MM.yy HH:mm}");
 
