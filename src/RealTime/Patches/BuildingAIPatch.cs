@@ -1885,6 +1885,77 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
+        private sealed class CommonBuildingAI_EmptyBuilding
+        {
+            [HarmonyPatch(typeof(CommonBuildingAI), "EmptyBuilding")]
+            [HarmonyPrefix]
+            public static bool Prefix(CommonBuildingAI __instance, ushort buildingID, ref Building data, CitizenUnit.Flags flags, bool onlyMoving)
+            {
+                if(data.m_fireIntensity != 0)
+                {
+                    var instance = Singleton<CitizenManager>.instance;
+                    uint num = data.m_citizenUnits;
+                    int num2 = 0;
+                    while (num != 0)
+                    {
+                        if ((instance.m_units.m_buffer[num].m_flags & flags) != 0)
+                        {
+                            for (int i = 0; i < 5; i++)
+                            {
+                                uint citizen = instance.m_units.m_buffer[num].GetCitizen(i);
+                                if (citizen == 0)
+                                {
+                                    continue;
+                                }
+                                ushort instance2 = instance.m_citizens.m_buffer[citizen].m_instance;
+                                if ((onlyMoving || instance.m_citizens.m_buffer[citizen].GetBuildingByLocation() != buildingID) && (instance2 == 0 || instance.m_instances.m_buffer[instance2].m_targetBuilding != buildingID || (instance.m_instances.m_buffer[instance2].m_flags & CitizenInstance.Flags.TargetIsNode) != 0) || instance.m_citizens.m_buffer[citizen].Collapsed)
+                                {
+                                    continue;
+                                }
+                                ushort num3 = 0;
+                                if (instance.m_citizens.m_buffer[citizen].m_workBuilding == buildingID)
+                                {
+                                    num3 = instance.m_citizens.m_buffer[citizen].m_homeBuilding;
+                                }
+                                else if (instance.m_citizens.m_buffer[citizen].m_visitBuilding == buildingID)
+                                {
+                                    if (instance.m_citizens.m_buffer[citizen].Arrested)
+                                    {
+                                        instance.m_citizens.m_buffer[citizen].Arrested = false;
+                                        if (instance2 != 0)
+                                        {
+                                            instance.ReleaseCitizenInstance(instance2);
+                                        }
+                                    }
+                                    instance.m_citizens.m_buffer[citizen].SetVisitplace(citizen, 0, 0u);
+                                    num3 = instance.m_citizens.m_buffer[citizen].m_homeBuilding;
+                                }
+                                if (num3 != 0)
+                                {
+                                    var citizenInfo = instance.m_citizens.m_buffer[citizen].GetCitizenInfo(citizen);
+                                    var humanAI = citizenInfo.m_citizenAI as HumanAI;
+                                    if (humanAI != null)
+                                    {
+                                        instance.m_citizens.m_buffer[citizen].m_flags &= ~Citizen.Flags.Evacuating;
+                                        humanAI.StartMoving(citizen, ref instance.m_citizens.m_buffer[citizen], buildingID, num3);
+                                    }
+                                }
+                            }
+                        }
+                        num = instance.m_units.m_buffer[num].m_nextUnit;
+                        if (++num2 > 524288)
+                        {
+                            CODebugBase<LogChannel>.Error(LogChannel.Core, "Invalid list detected!\n" + Environment.StackTrace);
+                            break;
+                        }
+                    }
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        [HarmonyPatch]
         private sealed class CommonBuildingAI_HandleFire
         {
             private delegate void HandleFireSpreadDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, int fireDamage);
@@ -1913,7 +1984,7 @@ namespace RealTime.Patches
                         if (Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.NaturalDisasters))
                         {
                             var disasterInfo = DisasterManager.FindDisasterInfo<StructureFireAI>();
-                            if (disasterInfo is object)
+                            if (disasterInfo is not null)
                             {
                                 var instance = Singleton<DisasterManager>.instance;
                                 if (instance.CreateDisaster(out ushort disasterIndex, disasterInfo))
