@@ -308,6 +308,11 @@ namespace RealTime.CustomAI
                         // This is for the case when the citizen stop studying while in school
                         schedule.Schedule(ResidentState.Unknown);
                     }
+                    else if (schedule.SchoolBuilding != 0 && schedule.ScheduledState == ResidentState.GoToSchool)
+                    {
+                        // This is for the case when the school was updated but the citizen is still going to school according to the old schedule
+                        schedule.Schedule(ResidentState.Unknown);
+                    }
 
                     Log.Debug(LogCategory.Schedule, $"Updated school class for citizen {citizenId}: school class {schedule.SchoolClass}, {schedule.SchoolClassStartHour} - {schedule.SchoolClassEndHour}");
                 }
@@ -330,6 +335,11 @@ namespace RealTime.CustomAI
                     else if (schedule.WorkBuilding == 0 && (schedule.ScheduledState == ResidentState.GoToWork || schedule.WorkStatus == WorkStatus.Working))
                     {
                         // This is for the case when the citizen becomes unemployed while at work
+                        schedule.Schedule(ResidentState.Unknown);
+                    }
+                    else if (schedule.WorkBuilding != 0 && schedule.ScheduledState == ResidentState.GoToWork)
+                    {
+                        // This is for the case when the workplace was updated but the citizen is still going to work according to the old schedule
                         schedule.Schedule(ResidentState.Unknown);
                     }
 
