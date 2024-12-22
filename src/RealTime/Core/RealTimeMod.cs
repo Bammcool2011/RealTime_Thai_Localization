@@ -193,6 +193,18 @@ namespace RealTime.Core
                             continue;
                         }
 
+                        if (ai is WaterFacilityAI waterFacilityAI && waterFacilityAI.RequireRoadAccess() == false)
+                        {
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            continue;
+                        }
+
+                        if (ai is PowerPlantAI powerPlantAI && powerPlantAI.RequireRoadAccess() == false)
+                        {
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            continue;
+                        }
+
                         // update buildings 
                         switch (service)
                         {

@@ -199,6 +199,8 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4 && BuildingManagerConnection.IsCimCareBuilding(buildingID):
                 case ItemClass.Service.PlayerEducation when BuildingManagerConnection.IsAreaResidentalBuilding(buildingID):
                 case ItemClass.Service.PlayerIndustry when BuildingManagerConnection.IsAreaResidentalBuilding(buildingID):
+                case ItemClass.Service.Water when building.Info.m_buildingAI is WaterFacilityAI waterFacilityAI && waterFacilityAI.RequireRoadAccess() == false:
+                case ItemClass.Service.Electricity when building.Info.m_buildingAI is PowerPlantAI powerPlantAI && powerPlantAI.RequireRoadAccess() == false:
                     return false;
             }
 

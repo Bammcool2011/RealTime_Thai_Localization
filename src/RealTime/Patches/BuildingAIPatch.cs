@@ -120,7 +120,7 @@ namespace RealTime.Patches
                 }
                 if (!RealTimeBuildingAI.IsBuildingWorking(buildingID) && Singleton<LoadingManager>.instance.SupportsExpansion(Expansion.Hotels))
                 {
-                    float radius = Singleton<ImmaterialResourceManager>.instance.m_properties.m_hotel.m_commertialBuilding.m_radius + (float)(buildingData.m_width + buildingData.m_length) * 0.25f;
+                    float radius = Singleton<ImmaterialResourceManager>.instance.m_properties.m_hotel.m_commertialBuilding.m_radius + (buildingData.m_width + buildingData.m_length) * 0.25f;
                     int rate = Singleton<ImmaterialResourceManager>.instance.m_properties.m_hotel.m_commertialBuilding.m_attraction * buildingData.m_width * buildingData.m_length;
                     Singleton<ImmaterialResourceManager>.instance.AddResource(ImmaterialResourceManager.Resource.Shopping, rate, buildingData.m_position, radius);
                 }
@@ -469,7 +469,7 @@ namespace RealTime.Patches
                         num = UniqueFacultyAI.DecreaseByBonus(UniqueFacultyAI.FacultyBonus.Science, num);
                         Singleton<NaturalResourceManager>.instance.TryDumpResource(NaturalResourceManager.Resource.Pollution, num, num, buildingData.m_position, 0f);
                     }
-                    int num2 = (!(__instance is MainCampusBuildingAI) && !(__instance is ParkGateAI) && !(__instance is MainIndustryBuildingAI)) ? 3 : 4;
+                    int num2 = (__instance is not MainCampusBuildingAI && __instance is not ParkGateAI && __instance is not MainIndustryBuildingAI) ? 3 : 4;
                     if (num >= num2)
                     {
                         if (Singleton<UnlockManager>.instance.Unlocked(ItemClass.Service.Garbage))
