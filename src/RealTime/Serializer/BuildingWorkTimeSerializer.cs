@@ -12,7 +12,7 @@ namespace RealTime.Serializer
         private const uint uiTUPLE_START = 0xFEFEFEFE;
         private const uint uiTUPLE_END = 0xFAFAFAFA;
 
-        private const ushort iBUILDING_WORK_TIME_DATA_VERSION = 4;
+        private const ushort iBUILDING_WORK_TIME_DATA_VERSION = 5;
 
         public static void SaveData(FastList<byte> Data)
         {
@@ -40,6 +40,7 @@ namespace RealTime.Serializer
                 StorageData.WriteBool(kvp.Value.IsPrefab, Data);
                 StorageData.WriteBool(kvp.Value.IsGlobal, Data);
                 StorageData.WriteBool(kvp.Value.IsLocked, Data);
+                StorageData.WriteBool(kvp.Value.IgnorePolicy, Data);
 
                 // Write end tuple
                 StorageData.WriteUInt32(uiTUPLE_END, Data);
@@ -65,6 +66,7 @@ namespace RealTime.Serializer
                 StorageData.WriteBool(kvp.WorkAtWeekands, Data);
                 StorageData.WriteBool(kvp.HasExtendedWorkShift, Data);
                 StorageData.WriteBool(kvp.HasContinuousWorkShift, Data);
+                StorageData.WriteBool(kvp.IgnorePolicy, Data);
                 StorageData.WriteInt32(kvp.WorkShifts, Data);
 
                 // Write end tuple
@@ -123,7 +125,8 @@ namespace RealTime.Serializer
                         IsDefault = true,
                         IsPrefab = false,
                         IsGlobal = false,
-                        IsLocked = false
+                        IsLocked = false,
+                        IgnorePolicy = false
                     };
 
                     if (iBuildingWorkTimeVersion >= 2)
@@ -136,6 +139,11 @@ namespace RealTime.Serializer
                     if (iBuildingWorkTimeVersion >= 3)
                     {
                         workTime.IsLocked = StorageData.ReadBool(Data, ref iIndex);
+                    }
+
+                    if (iBuildingWorkTimeVersion >= 5)
+                    {
+                        workTime.IgnorePolicy = StorageData.ReadBool(Data, ref iIndex);
                     }
 
                     BuildingWorkTimeManager.BuildingsWorkTime.Add(BuildingId, workTime);
@@ -171,6 +179,11 @@ namespace RealTime.Serializer
                             HasContinuousWorkShift = HasContinuousWorkShift,
                             WorkShifts = WorkShifts
                         };
+
+                        if (iBuildingWorkTimeVersion >= 5)
+                        {
+                            workTimePrefab.IgnorePolicy = StorageData.ReadBool(Data, ref iIndex);
+                        }
 
                         BuildingWorkTimeManager.BuildingsWorkTimePrefabs.Add(workTimePrefab);
 

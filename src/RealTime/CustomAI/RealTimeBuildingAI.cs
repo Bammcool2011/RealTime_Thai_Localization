@@ -1102,7 +1102,7 @@ namespace RealTime.CustomAI
                 workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
             }
 
-            if(building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure)
+            if(building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy)
             {
                 bool isNoiseRestricted = IsNoiseRestricted(buildingId, currentBuildingId);
                 bool updated = false;
@@ -1414,66 +1414,6 @@ namespace RealTime.CustomAI
 
                             float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
                             if (sqrDistance < sqrMaxDistance && BuildingManagerConnection.BuildingCanBeVisited(buildingId) && allowed)
-                            {
-                                return buildingId;
-                            }
-                        }
-
-                        buildingId = building.m_nextGridBuilding;
-                        if (++counter >= BuildingManager.MAX_BUILDING_COUNT)
-                        {
-                            break;
-                        }
-                    }
-                }
-            }
-
-            return 0;
-        }
-
-        /// <summary>Finds an active hotel building that matches the specified criteria.</summary>
-        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
-        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <returns>An ID of the first found building, or 0 if none found.</returns>
-        public ushort FindActiveHotel(ushort searchAreaCenterBuilding, float maxDistance)
-        {
-            if (searchAreaCenterBuilding == 0)
-            {
-                return 0;
-            }
-            var currentBuilding = BuildingManager.instance.m_buildings.m_buffer[searchAreaCenterBuilding];
-            var position = currentBuilding.m_position;
-
-            if (position == Vector3.zero)
-            {
-                return 0;
-            }
-
-            const Building.Flags restrictedFlags = Building.Flags.Deleted | Building.Flags.Evacuating | Building.Flags.Flooded | Building.Flags.Collapsed
-                | Building.Flags.BurnedDown | Building.Flags.RoadAccessFailed;
-
-            const Building.Flags requiredFlags = Building.Flags.Created | Building.Flags.Completed | Building.Flags.Active;
-            const Building.Flags combinedFlags = requiredFlags | restrictedFlags;
-
-            int gridXFrom = Mathf.Max((int)((position.x - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
-            int gridZFrom = Mathf.Max((int)((position.z - maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), 0);
-            int gridXTo = Mathf.Min((int)((position.x + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
-            int gridZTo = Mathf.Min((int)((position.z + maxDistance) / BuildingManager.BUILDINGGRID_CELL_SIZE + BuildingGridMiddle), MaxBuildingGridIndex);
-
-            float sqrMaxDistance = maxDistance * maxDistance;
-            for (int z = gridZFrom; z <= gridZTo; ++z)
-            {
-                for (int x = gridXFrom; x <= gridXTo; ++x)
-                {
-                    ushort buildingId = BuildingManager.instance.m_buildingGrid[z * BuildingManager.BUILDINGGRID_RESOLUTION + x];
-                    uint counter = 0;
-                    while (buildingId != 0)
-                    {
-                        var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
-                        if (BuildingManagerConnection.IsHotel(buildingId) && building.m_roomUsed < building.m_roomMax && IsBuildingWorking(buildingId) && (building.m_flags & combinedFlags) == requiredFlags)
-                        {
-                            float sqrDistance = Vector3.SqrMagnitude(position - building.m_position);
-                            if (sqrDistance < sqrMaxDistance && BuildingManagerConnection.HotelCanBeCheckedInTo(buildingId))
                             {
                                 return buildingId;
                             }

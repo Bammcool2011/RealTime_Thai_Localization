@@ -23,6 +23,7 @@ namespace RealTime.CustomAI
             buildingWorkTime.WorkAtWeekands = workTime.WorkAtWeekands;
             buildingWorkTime.HasExtendedWorkShift = workTime.HasExtendedWorkShift;
             buildingWorkTime.HasContinuousWorkShift = workTime.HasContinuousWorkShift;
+            buildingWorkTime.IgnorePolicy = workTime.IgnorePolicy;
             buildingWorkTime.WorkShifts = workTime.WorkShifts;
             buildingWorkTime.IsDefault = false;
             buildingWorkTime.IsPrefab = false;
@@ -39,6 +40,7 @@ namespace RealTime.CustomAI
             buildingWorkTime.WorkAtWeekands = workTimePrefab.WorkAtWeekands;
             buildingWorkTime.HasExtendedWorkShift = workTimePrefab.HasExtendedWorkShift;
             buildingWorkTime.HasContinuousWorkShift = workTimePrefab.HasContinuousWorkShift;
+            buildingWorkTime.IgnorePolicy = workTimePrefab.IgnorePolicy;
             buildingWorkTime.WorkShifts = workTimePrefab.WorkShifts;
             buildingWorkTime.IsDefault = false;
             buildingWorkTime.IsPrefab = true;
@@ -55,6 +57,7 @@ namespace RealTime.CustomAI
             buildingWorkTime.WorkAtWeekands = buildingWorkTimeGlobalConfig.WorkAtWeekands;
             buildingWorkTime.HasExtendedWorkShift = buildingWorkTimeGlobalConfig.HasExtendedWorkShift;
             buildingWorkTime.HasContinuousWorkShift = buildingWorkTimeGlobalConfig.HasContinuousWorkShift;
+            buildingWorkTime.IgnorePolicy = buildingWorkTimeGlobalConfig.IgnorePolicy;
             buildingWorkTime.WorkShifts = buildingWorkTimeGlobalConfig.WorkShifts;
             buildingWorkTime.IsDefault = false;
             buildingWorkTime.IsPrefab = false;
@@ -71,6 +74,7 @@ namespace RealTime.CustomAI
             buildingWorkTime.WorkAtWeekands = newDefaultWorkTime.WorkAtWeekands;
             buildingWorkTime.HasExtendedWorkShift = newDefaultWorkTime.HasExtendedWorkShift;
             buildingWorkTime.HasContinuousWorkShift = newDefaultWorkTime.HasContinuousWorkShift;
+            buildingWorkTime.IgnorePolicy = newDefaultWorkTime.IgnorePolicy;
             buildingWorkTime.WorkShifts = newDefaultWorkTime.WorkShifts;
             buildingWorkTime.IsDefault = true;
             buildingWorkTime.IsPrefab = false;
@@ -131,6 +135,7 @@ namespace RealTime.CustomAI
                 WorkAtWeekands = newWorkTime.WorkAtWeekands,
                 HasExtendedWorkShift = newWorkTime.HasExtendedWorkShift,
                 HasContinuousWorkShift = newWorkTime.HasContinuousWorkShift,
+                IgnorePolicy = newWorkTime.IgnorePolicy,
                 WorkShifts = newWorkTime.WorkShifts
             };
 
@@ -141,6 +146,7 @@ namespace RealTime.CustomAI
                 workTime.WorkAtWeekands = buildingWorkTimePrefab.WorkAtWeekands;
                 workTime.HasExtendedWorkShift = buildingWorkTimePrefab.HasExtendedWorkShift;
                 workTime.HasContinuousWorkShift = buildingWorkTimePrefab.HasContinuousWorkShift;
+                workTime.IgnorePolicy = buildingWorkTimePrefab.IgnorePolicy;
                 workTime.WorkShifts = buildingWorkTimePrefab.WorkShifts;
                 workTime.IsDefault = false;
                 workTime.IsPrefab = true;
@@ -157,6 +163,7 @@ namespace RealTime.CustomAI
                 prefabRecord.WorkAtWeekands = buildingWorkTimePrefab.WorkAtWeekands;
                 prefabRecord.HasExtendedWorkShift = buildingWorkTimePrefab.HasExtendedWorkShift;
                 prefabRecord.HasContinuousWorkShift = buildingWorkTimePrefab.HasContinuousWorkShift;
+                prefabRecord.IgnorePolicy = buildingWorkTimePrefab.IgnorePolicy;
                 prefabRecord.WorkShifts = buildingWorkTimePrefab.WorkShifts;
 
                 BuildingWorkTimeManager.SetPrefab(prefabRecord);
@@ -220,6 +227,7 @@ namespace RealTime.CustomAI
                 WorkAtWeekands = newWorkTime.WorkAtWeekands,
                 HasExtendedWorkShift = newWorkTime.HasExtendedWorkShift,
                 HasContinuousWorkShift = newWorkTime.HasContinuousWorkShift,
+                IgnorePolicy = newWorkTime.IgnorePolicy,
                 WorkShifts = newWorkTime.WorkShifts
             };
 
@@ -230,6 +238,7 @@ namespace RealTime.CustomAI
                 workTime.WorkAtWeekands = buildingWorkTimeGlobal.WorkAtWeekands;
                 workTime.HasExtendedWorkShift = buildingWorkTimeGlobal.HasExtendedWorkShift;
                 workTime.HasContinuousWorkShift = buildingWorkTimeGlobal.HasContinuousWorkShift;
+                workTime.IgnorePolicy = buildingWorkTimeGlobal.IgnorePolicy;
                 workTime.WorkShifts = buildingWorkTimeGlobal.WorkShifts;
                 workTime.IsDefault = false;
                 workTime.IsPrefab = false;
@@ -245,6 +254,7 @@ namespace RealTime.CustomAI
                 globalRecord.WorkAtWeekands = buildingWorkTimeGlobal.WorkAtWeekands;
                 globalRecord.HasExtendedWorkShift = buildingWorkTimeGlobal.HasExtendedWorkShift;
                 globalRecord.HasContinuousWorkShift = buildingWorkTimeGlobal.HasContinuousWorkShift;
+                globalRecord.IgnorePolicy = buildingWorkTimeGlobal.IgnorePolicy;
                 globalRecord.WorkShifts = buildingWorkTimeGlobal.WorkShifts;
 
                 BuildingWorkTimeGlobalConfig.Config.SetGlobalSettings(globalRecord);

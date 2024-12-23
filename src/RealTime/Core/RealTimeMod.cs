@@ -324,7 +324,15 @@ namespace RealTime.Core
                                 }
                                 break;
 
-                            case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure || subService == ItemClass.SubService.CommercialTourist:
+                            case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialTourist:
+                                if (!workTime.WorkAtNight)
+                                {
+                                    workTime = BuildingWorkTimeManager.CreateDefaultBuildingWorkTime(buildingId, building.Info);
+                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                                }
+                                break;
+
+                            case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy:
                                 if (!workTime.WorkAtNight)
                                 {
                                     workTime = BuildingWorkTimeManager.CreateDefaultBuildingWorkTime(buildingId, building.Info);

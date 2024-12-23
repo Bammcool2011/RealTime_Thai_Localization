@@ -142,6 +142,9 @@ namespace RealTime.Config
         [XmlAttribute("HasContinuousWorkShift")]
         public bool HasContinuousWorkShift { get; set; }
 
+        [XmlAttribute("IgnorePolicy")]
+        public bool IgnorePolicy { get; set; }
+
         [XmlAttribute("WorkShifts")]
         public int WorkShifts { get; set; }
     }

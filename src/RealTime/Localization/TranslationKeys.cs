@@ -103,6 +103,12 @@ namespace RealTime.Localization
         /// <summary>The key for the has continuous work shift checkbox tooltip.</summary>
         public const string HasContinuousWorkShiftTooltip = "HasContinuousWorkShiftTooltip";
 
+        /// <summary>The key for the ignore policy checkbox.</summary>
+        public const string IgnorePolicy = "IgnorePolicy";
+
+        /// <summary>The key for the ignore policy checkbox tooltip.</summary>
+        public const string IgnorePolicyTooltip = "IgnorePolicyTooltip";
+
         /// <summary>The key for the title of the number of work shifts.</summary>
         public const string ShiftCountTitle = "ShiftCountTitle";
 

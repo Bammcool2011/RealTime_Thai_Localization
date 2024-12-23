@@ -23,6 +23,7 @@ namespace RealTime.UI
         private readonly UICheckBox m_workAtWeekands;
         private readonly UICheckBox m_hasExtendedWorkShift;
         private readonly UICheckBox m_hasContinuousWorkShift;
+        private readonly UICheckBox m_ignorePolicy;
 
         private readonly UILabel m_workShiftsLabel;
         private readonly UISlider m_workShifts;
@@ -69,6 +70,8 @@ namespace RealTime.UI
             string t_hasExtendedWorkShiftTooltip = localizationProvider.Translate(TranslationKeys.HasExtendedWorkShiftTooltip);
             string t_hasContinuousWorkShift = localizationProvider.Translate(TranslationKeys.HasContinuousWorkShift);
             string t_hasContinuousWorkShiftTooltip = localizationProvider.Translate(TranslationKeys.HasContinuousWorkShiftTooltip);
+            string t_ignorePolicy = localizationProvider.Translate(TranslationKeys.IgnorePolicy);
+            string t_ignorePolicyTooltip = localizationProvider.Translate(TranslationKeys.IgnorePolicyTooltip);
             string t_shiftCountTitle = localizationProvider.Translate(TranslationKeys.ShiftCountTitle);
             string t_shiftCountTooltip = localizationProvider.Translate(TranslationKeys.ShiftCountTooltip);
 
@@ -209,11 +212,29 @@ namespace RealTime.UI
             };
             m_uiMainPanel.AttachUIComponent(m_hasContinuousWorkShift.gameObject);
 
+            m_ignorePolicy = UiUtils.CreateCheckBox(m_uiMainPanel, "IgnorePolicy", t_ignorePolicy, t_ignorePolicyTooltip, false);
+            m_ignorePolicy.width = 110f;
+            m_ignorePolicy.label.textColor = new Color32(185, 221, 254, 255);
+            m_ignorePolicy.label.textScale = 0.8125f;
+            m_ignorePolicy.AlignTo(buildingWorldInfoPanel.component, UIAlignAnchor.TopLeft);
+            m_ignorePolicy.relativePosition = new Vector3(30f, 290f);
+            m_ignorePolicy.eventCheckChanged += (component, value) =>
+            {
+                m_hasContinuousWorkShift.isChecked = value;
+                if (m_hasContinuousWorkShift.isChecked)
+                {
+                    m_hasExtendedWorkShift.isChecked = false;
+                }
+                UpdateSlider();
+            };
+            m_uiMainPanel.AttachUIComponent(m_hasContinuousWorkShift.gameObject);
+
+
             m_InnerPanel = UiUtils.CreatePanel(m_uiMainPanel, "OperationHoursInnerPanel");
             m_InnerPanel.backgroundSprite = "GenericPanelLight";
             m_InnerPanel.color = new Color32(206, 206, 206, 255);
             m_InnerPanel.size = new Vector2(235f, 66f);
-            m_InnerPanel.relativePosition = new Vector3(15f, 282f);
+            m_InnerPanel.relativePosition = new Vector3(15f, 292f);
 
             m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "WorkShiftsTitle", t_shiftCountTitle, "");
             m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");
@@ -284,6 +305,7 @@ namespace RealTime.UI
             m_workAtWeekands.Disable();
             m_hasExtendedWorkShift.Disable();
             m_hasContinuousWorkShift.Disable();
+            m_ignorePolicy.Disable();
             m_workShifts.Disable();
 
             SaveBuildingSettingsBtn.Disable();
@@ -300,6 +322,7 @@ namespace RealTime.UI
             m_workAtWeekands.Enable();
             m_hasExtendedWorkShift.Enable();
             m_hasContinuousWorkShift.Enable();
+            m_ignorePolicy.Enable();
             m_workShifts.Enable();
 
             SaveBuildingSettingsBtn.Enable();
@@ -373,7 +396,7 @@ namespace RealTime.UI
             var service = building.Info.GetService();
             var sub_service = building.Info.GetSubService();
             var instance = Singleton<DistrictManager>.instance;
-            bool IsAllowedZonedCommercial = buildingAI is CommercialBuildingAI && service == ItemClass.Service.Commercial && sub_service != ItemClass.SubService.CommercialTourist && sub_service != ItemClass.SubService.CommercialLeisure;
+            bool IsAllowedZonedCommercial = buildingAI is CommercialBuildingAI && service == ItemClass.Service.Commercial && sub_service != ItemClass.SubService.CommercialTourist;
             bool IsAllowedZonedGeneral = buildingAI is IndustrialBuildingAI || buildingAI is IndustrialExtractorAI || buildingAI is OfficeBuildingAI;
             bool isAllowedCityService = buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI || buildingAI is MarketAI || buildingAI is LibraryAI;
             bool isAllowedParkBuilding = buildingAI is ParkBuildingAI && instance.GetPark(building.m_position) == 0 && !CarParkingBuildings.Any(s => building.Info.name.Contains(s));
@@ -403,6 +426,7 @@ namespace RealTime.UI
                 m_workAtWeekands.isChecked = buildingWorkTime.WorkAtWeekands;
                 m_hasExtendedWorkShift.isChecked = buildingWorkTime.HasExtendedWorkShift;
                 m_hasContinuousWorkShift.isChecked = buildingWorkTime.HasContinuousWorkShift;
+                m_ignorePolicy.isChecked = buildingWorkTime.IgnorePolicy;
                 m_workShifts.value = buildingWorkTime.WorkShifts;
                 m_workShiftsCount.text = buildingWorkTime.WorkShifts.ToString();
             }
@@ -415,6 +439,7 @@ namespace RealTime.UI
                 m_workAtWeekands.isChecked = buildingWorkTimePrefab.WorkAtWeekands;
                 m_hasExtendedWorkShift.isChecked = buildingWorkTimePrefab.HasExtendedWorkShift;
                 m_hasContinuousWorkShift.isChecked = buildingWorkTimePrefab.HasContinuousWorkShift;
+                m_ignorePolicy.isChecked = buildingWorkTimePrefab.IgnorePolicy;
                 m_workShifts.value = buildingWorkTimePrefab.WorkShifts;
                 m_workShiftsCount.text = buildingWorkTimePrefab.WorkShifts.ToString();
             }
@@ -427,6 +452,7 @@ namespace RealTime.UI
                 m_workAtWeekands.isChecked = buildingWorkTimeGlobal.WorkAtWeekands;
                 m_hasExtendedWorkShift.isChecked = buildingWorkTimeGlobal.HasExtendedWorkShift;
                 m_hasContinuousWorkShift.isChecked = buildingWorkTimeGlobal.HasContinuousWorkShift;
+                m_ignorePolicy.isChecked = buildingWorkTimeGlobal.IgnorePolicy;
                 m_workShifts.value = buildingWorkTimeGlobal.WorkShifts;
                 m_workShiftsCount.text = buildingWorkTimeGlobal.WorkShifts.ToString();
             }
@@ -440,6 +466,7 @@ namespace RealTime.UI
             m_workAtWeekands.relativePosition = new Vector3(30f, 170f);
             m_hasExtendedWorkShift.relativePosition = new Vector3(30f, 210f);
             m_hasContinuousWorkShift.relativePosition = new Vector3(30f, 250f);
+            m_ignorePolicy.relativePosition = new Vector3(30f, 290f);
 
             m_workShiftsLabel.relativePosition = new Vector3(10f, 10f);
             m_workShifts.relativePosition = new Vector3(25f, 48f);
@@ -488,6 +515,7 @@ namespace RealTime.UI
             m_workAtWeekands.isChecked = buildingWorkTimeDefault.WorkAtWeekands;
             m_hasExtendedWorkShift.isChecked = buildingWorkTimeDefault.HasExtendedWorkShift;
             m_hasContinuousWorkShift.isChecked = buildingWorkTimeDefault.HasContinuousWorkShift;
+            m_ignorePolicy.isChecked = buildingWorkTimeDefault.IgnorePolicy;
             m_workShifts.value = buildingWorkTimeDefault.WorkShifts;
 
             UpdateBuildingSettings.UpdateBuildingToDefaultSettings(buildingID, buildingWorkTimeDefault);
@@ -511,6 +539,7 @@ namespace RealTime.UI
                 WorkAtWeekands = m_workAtWeekands.isChecked,
                 HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
                 HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
+                IgnorePolicy = m_ignorePolicy.isChecked,
                 WorkShifts = (int)m_workShifts.value,
                 IsLocked = is_locked
             };
@@ -534,6 +563,7 @@ namespace RealTime.UI
                 m_workAtWeekands.isChecked = prefabRecord.WorkAtWeekands;
                 m_hasExtendedWorkShift.isChecked = prefabRecord.HasExtendedWorkShift;
                 m_hasContinuousWorkShift.isChecked = prefabRecord.HasContinuousWorkShift;
+                m_ignorePolicy.isChecked = prefabRecord.IgnorePolicy;
                 m_workShifts.value = prefabRecord.WorkShifts;
                 m_settingsStatus.text = t_prefabSettingsStatus;
                 m_workShiftsCount.text = prefabRecord.WorkShifts.ToString();
@@ -557,6 +587,7 @@ namespace RealTime.UI
                 m_workAtWeekands.isChecked = buildingWorkTimeGlobal.WorkAtWeekands;
                 m_hasExtendedWorkShift.isChecked = buildingWorkTimeGlobal.HasExtendedWorkShift;
                 m_hasContinuousWorkShift.isChecked = buildingWorkTimeGlobal.HasContinuousWorkShift;
+                m_ignorePolicy.isChecked = buildingWorkTimeGlobal.IgnorePolicy;
                 m_workShifts.value = buildingWorkTimeGlobal.WorkShifts;
                 m_settingsStatus.text = t_globalSettingsStatus;
                 m_workShiftsCount.text = buildingWorkTimeGlobal.WorkShifts.ToString();
@@ -581,6 +612,7 @@ namespace RealTime.UI
                 WorkAtWeekands = m_workAtWeekands.isChecked,
                 HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
                 HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
+                IgnorePolicy = m_ignorePolicy.isChecked,
                 WorkShifts = (int)m_workShifts.value
             };
 
@@ -610,6 +642,7 @@ namespace RealTime.UI
                 WorkAtWeekands = m_workAtWeekands.isChecked,
                 HasExtendedWorkShift = m_hasExtendedWorkShift.isChecked,
                 HasContinuousWorkShift = m_hasContinuousWorkShift.isChecked,
+                IgnorePolicy = m_ignorePolicy.isChecked,
                 WorkShifts = (int)m_workShifts.value
             };
 
