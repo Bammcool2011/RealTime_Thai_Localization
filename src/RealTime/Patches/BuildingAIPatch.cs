@@ -4,7 +4,6 @@ namespace RealTime.Patches
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Reflection;
     using System.Reflection.Emit;
     using ColossalFramework;
@@ -1673,7 +1672,7 @@ namespace RealTime.Patches
                         UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
                     }
                 }
-                if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
+                if (BuildingManagerConnection.IsHotel(buildingID))
                 {
                     BaseCreateBuilding(__instance, buildingID, ref data);
                     data.m_level = (byte)__instance.m_info.m_class.m_level;
@@ -1689,6 +1688,10 @@ namespace RealTime.Patches
                     visitCount = hotelRoomCount * 20 / 100;
                     data.m_roomMax = (ushort)hotelRoomCount;
                     Singleton<CitizenManager>.instance.CreateUnits(out data.m_citizenUnits, ref Singleton<SimulationManager>.instance.m_randomizer, buildingID, 0, 0, workCount, visitCount, 0, 0, hotelRoomCount);
+                    if (!HotelManager.HotelExist(buildingID))
+                    {
+                        HotelManager.AddHotel(buildingID);
+                    }
                     return false;
                 }
                 else
@@ -1721,7 +1724,7 @@ namespace RealTime.Patches
                         UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
                     }
                 }
-                if (buildingInfo.GetAI() is CommercialBuildingAI && BuildingManagerConnection.IsHotel(buildingID))
+                if (BuildingManagerConnection.IsHotel(buildingID))
                 {
                     data.m_level = (byte)Mathf.Max(data.m_level, (int)__instance.m_info.m_class.m_level);
                     __instance.CalculateWorkplaceCount((ItemClass.Level)data.m_level, new Randomizer(buildingID), data.Width, data.Length, out int level, out int level2, out int level3, out int level4);
@@ -1736,6 +1739,10 @@ namespace RealTime.Patches
                     visitCount = hotelRoomCount * 20 / 100;
                     EnsureCitizenUnits(buildingID, ref data, 0, workCount, visitCount, 0, hotelRoomCount);
                     data.m_roomMax = (ushort)hotelRoomCount;
+                    if(!HotelManager.HotelExist(buildingID))
+                    {
+                        HotelManager.AddHotel(buildingID);
+                    }
                     return false;
                 }
                 else
@@ -1815,7 +1822,18 @@ namespace RealTime.Patches
         {
             [HarmonyPatch(typeof(PrivateBuildingAI), "ReleaseBuilding")]
             [HarmonyPrefix]
-            public static void Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data) => BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+            public static void Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
+            {
+                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+                if (BuildingManagerConnection.IsHotel(buildingID))
+                {
+                    if (HotelManager.HotelExist(buildingID))
+                    {
+                        HotelManager.RemoveHotel(buildingID);
+                    }
+                }
+
+            } 
         }
 
         [HarmonyPatch]
@@ -1839,6 +1857,11 @@ namespace RealTime.Patches
                     {
                         var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
                         UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
+                    }
+
+                    if (BuildingManagerConnection.IsHotel(buildingID) && !HotelManager.HotelExist(buildingID))
+                    {
+                        HotelManager.AddHotel(buildingID);
                     }
                 }
             } 
@@ -1866,6 +1889,11 @@ namespace RealTime.Patches
                         var buildignGlobal = BuildingWorkTimeGlobalConfig.Config.GetGlobalSettings(buildingInfo);
                         UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
                     }
+
+                    if (BuildingManagerConnection.IsHotel(buildingID) && !HotelManager.HotelExist(buildingID))
+                    {
+                        HotelManager.AddHotel(buildingID);
+                    }
                 }
             }
         }
@@ -1880,7 +1908,11 @@ namespace RealTime.Patches
                 if (BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
                 {
                     BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
-                }   
+                }
+                if (BuildingManagerConnection.IsHotel(buildingID) && HotelManager.HotelExist(buildingID))
+                {
+                    HotelManager.RemoveHotel(buildingID);
+                }
             }
         }
 

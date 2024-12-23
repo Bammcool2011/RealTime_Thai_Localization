@@ -203,7 +203,7 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            HotelCheck(instance, citizenId, ref citizen, targetBuildingId);
+            HotelCheck(instance, citizenId, ref citizen);
         }
 
         private void ProcessVisit(TAI instance, uint citizenId, ref TCitizen citizen)
@@ -223,7 +223,7 @@ namespace RealTime.CustomAI
 
             if (!buildingAI.IsBuildingWorking(visitBuilding))
             {
-                HotelCheck(instance, citizenId, ref citizen, visitBuilding);
+                HotelCheck(instance, citizenId, ref citizen);
                 return;
             }
 
@@ -336,7 +336,7 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Hotel:
-                    HotelCheck(instance, citizenId, ref citizen, currentBuilding);
+                    HotelCheck(instance, citizenId, ref citizen);
                     break;
             }
         }
@@ -418,9 +418,9 @@ namespace RealTime.CustomAI
             }
         }
 
-        private bool TryTofindHotel(uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        private bool TryTofindHotel(uint citizenId, ref TCitizen citizen)
         {
-            ushort hotelBuilding = FindHotel(currentBuilding);
+            ushort hotelBuilding = HotelManager.FindRandomHotel();
             if (hotelBuilding != 0)
             {
                 CitizenProxy.SetHotel(ref citizen, citizenId, hotelBuilding, 0);
@@ -429,7 +429,7 @@ namespace RealTime.CustomAI
             return false;
         }
 
-        private void HotelCheck(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
+        private void HotelCheck(TAI instance, uint citizenId, ref TCitizen citizen)
         {
             ushort hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
             if (hotelBuilding != 0)
@@ -439,7 +439,7 @@ namespace RealTime.CustomAI
             }
             else
             {
-                bool findHotel = TryTofindHotel(citizenId, ref citizen, currentBuilding);
+                bool findHotel = TryTofindHotel(citizenId, ref citizen);
                 if (findHotel)
                 {
                     hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
@@ -452,17 +452,6 @@ namespace RealTime.CustomAI
                     touristAI.FindVisitPlace(instance, citizenId, 0, touristAI.GetLeavingReason(instance, citizenId, ref citizen));
                 }
             }
-        }
-
-
-        private ushort FindHotel(ushort currentBuilding)
-        {
-            if (!Random.ShouldOccur(FindHotelChance))
-            {
-                return 0;
-            }
-
-            return buildingAI.FindActiveHotel(currentBuilding, HotelSearchDistance * 4);
         }
 
         private bool StartMovingToVisitBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort visitBuilding)
