@@ -89,12 +89,6 @@ namespace RealTime.CustomAI
             bool isShopping = true,
             ushort currentBuilding = 0);
 
-        /// <summary>Finds an active hotel building that matches the specified criteria and has enough rooms.</summary>
-        /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
-        /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
-        /// <returns>An ID of the first found building, or 0 if none found.</returns>
-        ushort FindActiveHotel(ushort searchAreaCenterBuilding, float maxDistance);
-
         /// <summary>Finds an active cafeteria building that is in the same campus.</summary>
         /// <param name="searchAreaCenterBuilding">The building ID that represents the search area center point.</param>
         /// <param name="maxDistance">The maximum distance for search, the search area radius.</param>
