@@ -220,21 +220,17 @@ namespace RealTime.UI
             m_ignorePolicy.relativePosition = new Vector3(30f, 290f);
             m_ignorePolicy.eventCheckChanged += (component, value) =>
             {
-                m_hasContinuousWorkShift.isChecked = value;
-                if (m_hasContinuousWorkShift.isChecked)
-                {
-                    m_hasExtendedWorkShift.isChecked = false;
-                }
+                m_ignorePolicy.isChecked = value;
                 UpdateSlider();
             };
-            m_uiMainPanel.AttachUIComponent(m_hasContinuousWorkShift.gameObject);
+            m_uiMainPanel.AttachUIComponent(m_ignorePolicy.gameObject);
 
 
             m_InnerPanel = UiUtils.CreatePanel(m_uiMainPanel, "OperationHoursInnerPanel");
             m_InnerPanel.backgroundSprite = "GenericPanelLight";
             m_InnerPanel.color = new Color32(206, 206, 206, 255);
             m_InnerPanel.size = new Vector2(235f, 66f);
-            m_InnerPanel.relativePosition = new Vector3(15f, 292f);
+            m_InnerPanel.relativePosition = new Vector3(15f, 322f);
 
             m_workShiftsLabel = UiUtils.CreateLabel(m_uiMainPanel, "WorkShiftsTitle", t_shiftCountTitle, "");
             m_workShiftsLabel.font = UiUtils.GetUIFont("OpenSans-Regular");

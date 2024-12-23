@@ -114,6 +114,7 @@ namespace RealTime.Core
             {
                 FireBurnTimeManager.Init();
                 BuildingWorkTimeManager.Init();
+                HotelManager.Init();
             }
             catch (Exception e)
             {
