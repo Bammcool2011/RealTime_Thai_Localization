@@ -1152,7 +1152,6 @@ namespace RealTime.CustomAI
                 {
                     BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
                 }
-
             }
 
             // WorkForceMatters setting is enabled and no one at work - building will not work
@@ -1403,11 +1402,6 @@ namespace RealTime.CustomAI
                             && (building.m_flags & combinedFlags) == requiredFlags)
                         {
                             if (!isShopping && building_service == ItemClass.Service.Commercial && building_subService == ItemClass.SubService.CommercialLeisure)
-                            {
-                                allowed = false;
-                            }
-
-                            if (building_service == ItemClass.Service.Commercial && building_subService == ItemClass.SubService.CommercialTourist)
                             {
                                 allowed = false;
                             }

@@ -435,6 +435,11 @@ namespace RealTime.GameConnection
                 return true;
             }
 
+            if (building.Info.m_buildingAI is HotelAI)
+            {
+                return true;
+            }
+
             return false;
         }
 

@@ -203,7 +203,7 @@ namespace RealTime.CustomAI
                 return;
             }
 
-            HotelCheck(instance, citizenId, ref citizen);
+            HotelCheck(instance, citizenId, ref citizen, targetBuildingId);
         }
 
         private void ProcessVisit(TAI instance, uint citizenId, ref TCitizen citizen)
@@ -223,7 +223,7 @@ namespace RealTime.CustomAI
 
             if (!buildingAI.IsBuildingWorking(visitBuilding))
             {
-                HotelCheck(instance, citizenId, ref citizen);
+                HotelCheck(instance, citizenId, ref citizen, visitBuilding);
                 return;
             }
 
@@ -336,7 +336,7 @@ namespace RealTime.CustomAI
                     break;
 
                 case TouristTarget.Hotel:
-                    HotelCheck(instance, citizenId, ref citizen);
+                    HotelCheck(instance, citizenId, ref citizen, currentBuilding);
                     break;
             }
         }
@@ -429,12 +429,12 @@ namespace RealTime.CustomAI
             return false;
         }
 
-        private void HotelCheck(TAI instance, uint citizenId, ref TCitizen citizen)
+        private void HotelCheck(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding)
         {
             ushort hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
             if (hotelBuilding != 0)
             {
-                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} changes the target and moves to a hotel {hotelBuilding} because of time or weather");
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} has an hotel {hotelBuilding} and moves there because of time or weather");
                 StartMovingToHotelBuilding(instance, citizenId, ref citizen, 0, hotelBuilding);
             }
             else
@@ -443,8 +443,8 @@ namespace RealTime.CustomAI
                 if (findHotel)
                 {
                     hotelBuilding = CitizenProxy.GetHotelBuilding(ref citizen);
-                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} changes the target and moves to a hotel {hotelBuilding} because of time or weather");
-                    StartMovingToHotelBuilding(instance, citizenId, ref citizen, 0, hotelBuilding);
+                    Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} found a hotel {hotelBuilding} and moves there because of time or weather");
+                    StartMovingToHotelBuilding(instance, citizenId, ref citizen, currentBuilding, hotelBuilding);
                 }
                 else
                 {
@@ -472,21 +472,15 @@ namespace RealTime.CustomAI
             return true;
         }
 
-        private bool StartMovingToHotelBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort hotelBuilding)
+        private void StartMovingToHotelBuilding(TAI instance, uint citizenId, ref TCitizen citizen, ushort currentBuilding, ushort hotelBuilding)
         {
-            if (CitizenProxy.GetHotelBuilding(ref citizen) == 0)
-            {
-                CitizenProxy.ResetHotel(ref citizen, citizenId);
-                return false;
-            }
-
             if (!touristAI.StartMoving(instance, citizenId, ref citizen, currentBuilding, hotelBuilding))
             {
-                CitizenProxy.ResetHotel(ref citizen, citizenId);
-                return false;
+                Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} is unable to move from building {currentBuilding} to the hotel {hotelBuilding}");
+                return;
             }
 
-            return true;
+            Log.Debug(LogCategory.Movement, TimeInfo.Now, $"Tourist {GetCitizenDesc(citizenId, ref citizen)} started moving from building {currentBuilding} to the hotel {hotelBuilding}");
         }
 
         private uint GetHotelLeaveChance() => TimeInfo.IsNightTime ? 0u : (uint)((TimeInfo.CurrentHour - Config.WakeUpHour) / 0.03f);

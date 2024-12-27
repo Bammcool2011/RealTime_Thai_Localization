@@ -2,6 +2,7 @@ namespace RealTime.CustomAI
 {
     using System;
     using System.Collections.Generic;
+    using ColossalFramework;
 
     internal static class HotelManager
     {
@@ -21,8 +22,26 @@ namespace RealTime.CustomAI
 
         public static ushort FindRandomHotel()
         {
-            var rnd = new Random();
-            int index = rnd.Next(HotelsList.Count);
+            if (HotelsList.Count == 0)
+            {
+                return 0;
+            }
+
+            for(int i = HotelsList.Count - 1; i >= 0; i--)
+            {
+                var hotelBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[HotelsList[i]];
+                if (hotelBuilding.m_roomUsed >= hotelBuilding.m_roomMax)
+                {
+                    HotelsList.RemoveAt(i);
+                }
+            }
+
+            if (HotelsList.Count == 0)
+            {
+                return 0;
+            }
+
+            int index = Singleton<SimulationManager>.instance.m_randomizer.Int32(0, HotelsList.Count - 1);
             return HotelsList[index];
         }
     }

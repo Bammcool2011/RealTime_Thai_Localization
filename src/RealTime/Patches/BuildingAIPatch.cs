@@ -1739,7 +1739,7 @@ namespace RealTime.Patches
                     visitCount = hotelRoomCount * 20 / 100;
                     EnsureCitizenUnits(buildingID, ref data, 0, workCount, visitCount, 0, hotelRoomCount);
                     data.m_roomMax = (ushort)hotelRoomCount;
-                    if(!HotelManager.HotelExist(buildingID))
+                    if (!HotelManager.HotelExist(buildingID) && data.m_roomUsed < data.m_roomMax)
                     {
                         HotelManager.AddHotel(buildingID);
                     }
@@ -1890,7 +1890,7 @@ namespace RealTime.Patches
                         UpdateBuildingSettings.SetBuildingToGlobal(buildingID, buildignGlobal);
                     }
 
-                    if (BuildingManagerConnection.IsHotel(buildingID) && !HotelManager.HotelExist(buildingID))
+                    if (BuildingManagerConnection.IsHotel(buildingID) && !HotelManager.HotelExist(buildingID) && data.m_roomUsed < data.m_roomMax)
                     {
                         HotelManager.AddHotel(buildingID);
                     }
