@@ -47,4 +47,54 @@ A mod for the Cities: Skylines game. Adjusts the time flow in the game to make i
 **Real Time** works best with medium-sized cities (population up to 65.500). With large cities, there are some game limitations that make it difficult for **Real Time** to keep the citizens behavior realistic. Furthermore, the CPU usage and the graphic adapter load increase drastically, because every citizen needs to be precisely simulated.
 
 ## Distribution
-**Real Time** is published on Steam Workshop. To use **Real Time**, players need to subscribe to [this Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=1420955187).
+**Real Time** is published on Steam Workshop. To use **Real Time**, players need to subscribe to [this Steam Workshop item](https://steamcommunity.com/sharedfiles/filedetails/?id=3059406297).
+
+## Update 2.6
+#### School and Student-Related Features
+* Students and workers at campus will try to eat at the cafeteria for lunch.
+* Schools can now recruit students even when closed.
+* The academic year starts on weekdays between 9 and 10 AM.
+* The academic year includes a 24-hour gap before the next year for graduation ceremonies and to let students finish and graduate.
+* The academic year will not end at night or on weekends.
+* Students, like workers, won’t go to school if half the class has already passed.
+* "Toga party" duration is now adjustable by users.
+
+#### Hotel and Tourist Features
+* Hotels are now searched based on a list of availability, not based on a search radius.
+* Support for base hotels and After Dark workshop growable hotels to accommodate tourists.
+* Commercial and office buildings will still emit hotel attractiveness even when closed.
+* Tourists will leave the city if there are no suitable alternatives when buildings close.
+
+#### City Views
+* Wind mode will show open and closed buildings.
+* Natural Resources mode will display people in closed buildings in blue.
+
+#### Building and Gameplay Mechanics
+* People will start searching for a new place to visit when a building is about to close. If a building has already closed, they will go home, to a hotel, or leave the city.
+* Added new events in unique buildings from various DLCs.
+* Fix for the bug where people were stuck waiting for the hospital.
+* Added "ignore policy" functionality—currently works only for leisure buildings to bypass the "nimby policy."
+* Fish market and library work-time support.
+* Go on vacation and return between midnight and 2 AM.
+
+## Update 2.5
+* Academic year length support fix.
+* Opreation hours for almost all building types.
+* Night class quota bug fix that made people choos night class over day class.
+* When a building is not working it will not send/request vehicles and will not report problems.
+* Buildings will still show attractivness even when closed.
+* Car parking buildings are always open and removed attractivnes and visit.
+* Cafeteria and Gym will get visited by students of the same campus to eat lunch or entertiament and will also have visitiors count.
+* Clear building fire manager for players that have loading issues.
+* Show citizen current state when applicable.
+* First time workers that get to work early will try to visit a nearby shop until work begins or go home if not visit place found (3times).
+* If you have combined ai installed, citizen will visit a bank or a post office. To control the percentage please use the combined ai mod sliders.
+* Fix global and type settings saving and loading.
+* Lock/Unlock building settings button - to avoid type settings to be applied.
+* Support for UniversityHospitalAI from combined ai mod.
+* Citizens will leave buildings when they become closed.
+* Citizen can schedule shopping or breakfast before first shift work if they have enough time.
+
+## Update 2.2.1
+* Fixed incorrect work hours for buildings and new workers assigned to the wrong shift.
+* Added support to Combined AI's mod allowing you to visit banks and post offices.
