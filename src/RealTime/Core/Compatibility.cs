@@ -33,7 +33,7 @@ namespace RealTime.Core
         private Compatibility(ILocalizationProvider localizationProvider)
         {
             this.localizationProvider = localizationProvider;
-            activeMods = new Dictionary<ulong, PluginManager.PluginInfo>();
+            activeMods = [];
         }
 
         /// <summary>Initializes a new instance of the <see cref="Compatibility"/> class.</summary>

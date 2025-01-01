@@ -98,9 +98,7 @@ namespace RealTime.CustomAI
                 onTheWayHours = MaxTravelTime;
             }
 
-            TravelTimeToWork = TravelTimeToWork == 0
-                ? onTheWayHours
-                : (TravelTimeToWork + onTheWayHours) / 2;
+            TravelTimeToWork = TravelTimeToWork == 0 ? onTheWayHours : (TravelTimeToWork + onTheWayHours) / 2;
         }
 
         /// <summary>Updates the work shift data for this citizen's schedule.</summary>
