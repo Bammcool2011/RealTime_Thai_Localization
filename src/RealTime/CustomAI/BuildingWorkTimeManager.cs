@@ -222,7 +222,8 @@ namespace RealTime.CustomAI
             bool OpenAtNight = IsBuildingActiveAtNight(service, sub_service, level);
             bool OpenOnWeekends = IsBuildingActiveOnWeekend(service, sub_service, level);
 
-            if (BuildingManagerConnection.IsHotel(buildingID) || BuildingManagerConnection.IsAreaMainBuilding(buildingID) || BuildingManagerConnection.IsWarehouseBuilding(buildingID))
+            if (BuildingManagerConnection.IsHotel(buildingID) || BuildingManagerConnection.IsAreaMainBuilding(buildingID)
+                || BuildingManagerConnection.IsWarehouseBuilding(buildingID) || BuildingManagerConnection.IsUniqueFactoryBuilding(buildingID))
             {
                 OpenAtNight = true;
                 OpenOnWeekends = true;

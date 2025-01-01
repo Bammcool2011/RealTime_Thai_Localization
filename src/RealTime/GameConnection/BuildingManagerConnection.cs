@@ -464,11 +464,11 @@ namespace RealTime.GameConnection
         }
 
         /// <summary>
-        /// Determines whether the building with specified ID is a warehouse or not.
+        /// Determines whether the building with specified ID is a warehouse or a warehouse station or none of them.
         /// </summary>
         /// <param name="buildingId">The building ID to check.</param>
         /// <returns>
-        ///   <c>true</c> if the building with the specified ID is a warehouse;
+        ///   <c>true</c> if the building with the specified ID is a warehouse or a warehouse station or none of them;
         ///   otherwise, <c>false</c>.
         /// </returns>
         public static bool IsWarehouseBuilding(ushort buildingId)
@@ -481,11 +481,37 @@ namespace RealTime.GameConnection
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             var buildingInfo = building.Info;
             var buildinAI = buildingInfo?.m_buildingAI;
-            if (buildinAI is WarehouseAI warehouseAI)
+            if (buildinAI is WarehouseAI || buildinAI is WarehouseStationAI)
             {
-                bool is_special = warehouseAI.m_storageType == TransferManager.TransferReason.Logs || warehouseAI.m_storageType == TransferManager.TransferReason.Ore ||
-                    warehouseAI.m_storageType == TransferManager.TransferReason.Oil || warehouseAI.m_storageType == TransferManager.TransferReason.Grain;
-                return !is_special;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the building with specified ID is a unique factory or not.
+        /// </summary>
+        /// <param name="buildingId">The building ID to check.</param>
+        /// <returns>
+        ///   <c>true</c> if the building with the specified ID is a unique factory or not;
+        ///   otherwise, <c>false</c>.
+        /// </returns>
+        public static bool IsUniqueFactoryBuilding(ushort buildingId)
+        {
+            if (buildingId == 0)
+            {
+                return false;
+            }
+
+            var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
+            var buildingInfo = building.Info;
+            var buildinAI = buildingInfo?.m_buildingAI;
+            if (buildinAI is UniqueFactoryAI)
+            {
+                return true;
             }
             else
             {

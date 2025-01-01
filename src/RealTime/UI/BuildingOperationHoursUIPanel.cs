@@ -50,11 +50,11 @@ namespace RealTime.UI
         private readonly string t_confirmPanelGlobalText;
 
         private readonly float CheckBoxXposition;
-        private readonly float CheckBoxYposition;
+        public float CheckBoxYposition;
 
         private readonly string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
 
-        public BuildingOperationHoursUIPanel(BuildingWorldInfoPanel buildingWorldInfoPanel, UIPanel uIPanel, float checkBoxXposition, float checkBoxYposition, ILocalizationProvider localizationProvider)
+        public BuildingOperationHoursUIPanel(BuildingWorldInfoPanel buildingWorldInfoPanel, UIPanel uIPanel, float checkBoxXposition, float checkBoxYposition, float panelHeight, ILocalizationProvider localizationProvider)
         {
             CheckBoxXposition = checkBoxXposition;
             CheckBoxYposition = checkBoxYposition;
@@ -106,7 +106,7 @@ namespace RealTime.UI
             m_uiMainPanel.backgroundSprite = "SubcategoriesPanel";
             m_uiMainPanel.opacity = 0.90f;
             m_uiMainPanel.isVisible = false;
-            m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1, 0f);
+            m_uiMainPanel.relativePosition = new Vector3(m_uiMainPanel.parent.width + 1, panelHeight);
             m_uiMainPanel.height = 410f;
             m_uiMainPanel.width = 510f;
 
@@ -396,10 +396,11 @@ namespace RealTime.UI
             bool IsAllowedZonedGeneral = buildingAI is IndustrialBuildingAI || buildingAI is IndustrialExtractorAI || buildingAI is OfficeBuildingAI;
             bool isAllowedCityService = buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI || buildingAI is MarketAI || buildingAI is LibraryAI;
             bool isAllowedParkBuilding = buildingAI is ParkBuildingAI && instance.GetPark(building.m_position) == 0 && !CarParkingBuildings.Any(s => building.Info.name.Contains(s));
+            bool isAllowedIndustriesBuilding = buildingAI is ExtractingFacilityAI || buildingAI is ProcessingFacilityAI || buildingAI is UniqueFactoryAI || buildingAI is WarehouseAI || buildingAI is WarehouseStationAI;
             bool isPark = buildingAI is ParkAI && !CarParkingBuildings.Any(s => building.Info.name.Contains(s));
 
             // dont allow hotels
-            if (IsAllowedZonedCommercial || IsAllowedZonedGeneral || isAllowedCityService || isAllowedParkBuilding || isPark)
+            if (IsAllowedZonedCommercial || IsAllowedZonedGeneral || isAllowedCityService || isAllowedParkBuilding || isPark || isAllowedIndustriesBuilding)
             {
                 var buildingWorkTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingID);
                 RefreshData(buildingID, buildingWorkTime);

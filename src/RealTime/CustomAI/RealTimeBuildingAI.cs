@@ -1102,7 +1102,7 @@ namespace RealTime.CustomAI
                 workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
             }
 
-            if(building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy)
+            if(building.Info.m_class.m_subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy && workTime.IsDefault)
             {
                 bool isNoiseRestricted = IsNoiseRestricted(buildingId, currentBuildingId);
                 bool updated = false;
@@ -1147,6 +1147,29 @@ namespace RealTime.CustomAI
                             updated = true;
                         }
                     }
+                }
+                if (updated)
+                {
+                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                }
+            }
+
+            if ((building.Info.m_class.m_subService == ItemClass.SubService.PlayerIndustryFarming
+                || building.Info.m_class.m_subService == ItemClass.SubService.PlayerIndustryForestry) && !workTime.IgnorePolicy && workTime.IsDefault)
+            {
+                bool IsEssential = BuildingManagerConnection.IsEssentialIndustryBuilding(buildingId);
+                bool updated = false;
+                if (IsEssential && !workTime.WorkAtNight)
+                {
+                    workTime.WorkShifts = 3;
+                    workTime.WorkAtNight = true;
+                    updated = true;
+                }
+                else if (!IsEssential && workTime.WorkAtNight)
+                {
+                    workTime.WorkShifts = 2;
+                    workTime.WorkAtNight = false;
+                    updated = true;
                 }
                 if (updated)
                 {

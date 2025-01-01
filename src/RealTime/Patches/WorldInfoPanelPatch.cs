@@ -21,6 +21,7 @@ namespace RealTime.Patches
     using ColossalFramework.Threading;
     using SkyTools.Patching;
     using System.Collections.Generic;
+    using static ColossalFramework.DataBinding.BindPropertyByKey;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -351,7 +352,7 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                zonedBuildingOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_zonedBuildingWorldInfoPanel, makeHistoricalPanel, 350f, 6f, localizationProvider);
+                zonedBuildingOperationHoursUIPanel = new BuildingOperationHoursUIPanel(m_zonedBuildingWorldInfoPanel, makeHistoricalPanel, 350f, 6f, 0f, localizationProvider);
             }
         }
 
@@ -364,17 +365,21 @@ namespace RealTime.Patches
 
             private static UIButton m_endYearButton;
 
-            private delegate void EndEventDelegate(AcademicYearAI __instance, ushort eventID, ref EventData data);
-            private static readonly EndEventDelegate EndEvent = AccessTools.MethodDelegate<EndEventDelegate>(typeof(AcademicYearAI).GetMethod("EndEvent", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
-
             [HarmonyPatch(typeof(CityServiceWorldInfoPanel), "OnSetTarget")]
             [HarmonyPostfix]
-            private static void OnSetTarget()
+            private static void OnSetTarget(InstanceID ___m_InstanceID)
             {
+                var buildingAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].Info.m_buildingAI;
                 if (cityServiceOperationHoursUIPanel == null || s_visitorsLabel == null || m_endYearButton == null)
                 {
-                    CityServiceCreateUI();
+                    CityServiceCreateUI(buildingAI);
                 }
+                float checkBoxYposition = 16f;
+                if (buildingAI is ExtractingFacilityAI || buildingAI is ProcessingFacilityAI)
+                {
+                    checkBoxYposition = 0f;
+                }
+                cityServiceOperationHoursUIPanel.CheckBoxYposition = checkBoxYposition;
                 cityServiceOperationHoursUIPanel.UpdateBuildingData();
             }
 
@@ -435,7 +440,7 @@ namespace RealTime.Patches
                 }
             }
 
-            private static void CityServiceCreateUI()
+            private static void CityServiceCreateUI(BuildingAI buildingAI)
             {
                 var m_cityServiceWorldInfoPanel = GameObject.Find("(Library) CityServiceWorldInfoPanel").GetComponent<CityServiceWorldInfoPanel>();
                 var wrapper = m_cityServiceWorldInfoPanel?.Find("Wrapper");
@@ -446,7 +451,17 @@ namespace RealTime.Patches
                 {
                     return;
                 }
-                cityServiceOperationHoursUIPanel ??= new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, 320f, 16f, localizationProvider);
+                float checkBoxXposition = 320f;
+                float checkBoxYposition = 16f;
+                float panelHeight = 0f;
+                if (buildingAI is ExtractingFacilityAI || buildingAI is ProcessingFacilityAI)
+                {
+                    checkBoxXposition = 360f;
+                    checkBoxYposition = 0f;
+                    panelHeight = 40f;
+                }
+
+                cityServiceOperationHoursUIPanel ??= new BuildingOperationHoursUIPanel(m_cityServiceWorldInfoPanel, buttonPanels, checkBoxXposition, checkBoxYposition, panelHeight, localizationProvider);
                 if (s_visitorsLabel == null)
                 {
                     s_visitorsLabel = UiUtils.CreateLabel(buttonPanels, 65f, 280f, "Visitors", textScale: 0.75f);
@@ -542,6 +557,74 @@ namespace RealTime.Patches
                 }
             }
 
+        }
+
+        [HarmonyPatch]
+        private sealed class UniqueFactoryWorldInfoPanelPatch
+        {
+            private static BuildingOperationHoursUIPanel uniqueFactoryOperationHoursUIPanel;
+
+            [HarmonyPatch(typeof(UniqueFactoryWorldInfoPanel), "OnSetTarget")]
+            [HarmonyPostfix]
+            private static void OnSetTarget()
+            {
+                if (uniqueFactoryOperationHoursUIPanel == null)
+                {
+                    UniqueFactoryCreateUI();
+                }
+                uniqueFactoryOperationHoursUIPanel.UpdateBuildingData();
+            }
+
+            private static void UniqueFactoryCreateUI()
+            {
+                var m_uniqueFactoryWorldInfoPanel = GameObject.Find("(Library) UniqueFactoryWorldInfoPanel").GetComponent<UniqueFactoryWorldInfoPanel>();
+                var IncomeExpensesSection = m_uniqueFactoryWorldInfoPanel?.Find("IncomeExpensesSection").GetComponent<UIPanel>();
+                if (IncomeExpensesSection == null)
+                {
+                    return;
+                } 
+                uniqueFactoryOperationHoursUIPanel ??= new BuildingOperationHoursUIPanel(m_uniqueFactoryWorldInfoPanel, IncomeExpensesSection, 320f, 0f, 0f, localizationProvider);
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class WarehouseWorldInfoPanelPatch
+        {
+            private static BuildingOperationHoursUIPanel warehouseOperationHoursUIPanel;
+
+            [HarmonyPatch(typeof(WarehouseWorldInfoPanel), "OnSetTarget")]
+            [HarmonyPostfix]
+            private static void OnSetTarget(InstanceID ___m_InstanceID)
+            {
+                var buildingAI = Singleton<BuildingManager>.instance.m_buildings.m_buffer[___m_InstanceID.Building].Info.m_buildingAI;
+                if (warehouseOperationHoursUIPanel == null)
+                {
+                    WarehouseCreateUI(buildingAI);
+                }
+                float checkBoxYposition = 500f;
+                if (buildingAI is WarehouseAI warehouse && warehouse.m_storageType == TransferManager.TransferReason.None)
+                {
+                    checkBoxYposition = 550f;
+                }
+                warehouseOperationHoursUIPanel.CheckBoxYposition = checkBoxYposition;
+                warehouseOperationHoursUIPanel.UpdateBuildingData();
+            }
+
+            private static void WarehouseCreateUI(BuildingAI buildingAI)
+            {
+                var m_warehouseWorldInfoPanel = GameObject.Find("(Library) WarehouseWorldInfoPanel").GetComponent<WarehouseWorldInfoPanel>();
+                var WarehousePanel = GameObject.Find("(Library) WarehouseWorldInfoPanel").GetComponent<UIPanel>();
+                if (WarehousePanel == null)
+                {
+                    return;
+                }
+                float checkBoxYposition = 500f;
+                if (buildingAI is WarehouseAI warehouse && warehouse.m_storageType == TransferManager.TransferReason.None)
+                {
+                    checkBoxYposition = 550f;
+                }
+                warehouseOperationHoursUIPanel ??= new BuildingOperationHoursUIPanel(m_warehouseWorldInfoPanel, WarehousePanel, 320f, checkBoxYposition, 0f, localizationProvider);
+            }
         }
 
         [HarmonyPatch]
