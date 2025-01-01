@@ -128,6 +128,10 @@ namespace RealTime.CustomAI
                     {
                         string buildingName = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID].Info.name;
                         text += $" and buildingId is {buildingID} and building is {buildingName} and current location is {currentLocation}";
+                        if(!buildingAI.IsBuildingWorking(buildingID, 1))
+                        {
+                            schedule.Schedule(ResidentState.Unknown);
+                        }
                     }
                 }
 
@@ -200,11 +204,8 @@ namespace RealTime.CustomAI
         /// <param name="citizenId">The citizen ID to process.</param>
         public void RegisterCitizenDeparture(uint citizenId)
         {
-            if (CitizenMgr.GetCitizenLocation(citizenId) == Citizen.Location.Moving)
-            {
-                ref var schedule = ref residentSchedules[citizenId];
-                schedule.DepartureTime = TimeInfo.Now;
-            }
+            ref var schedule = ref residentSchedules[citizenId];
+            schedule.DepartureTime = TimeInfo.Now;
         }
 
         /// <summary>Performs simulation for starting a day cycle beginning with specified hour.
