@@ -19,7 +19,7 @@ namespace RealTime.CustomAI
             var departureTime = workBehavior.ScheduleGoToWorkTime(ref schedule, currentBuilding, simulationCycle);
 
             float timeLeft = (float)(departureTime - TimeInfo.Now).TotalHours;
-            Log.Debug(LogCategory.Schedule, $"  - departureTime: {departureTime}, TimeInfo.Now: {TimeInfo.Now}");
+            Log.Debug(LogCategory.Schedule, $"  - departureTime: {departureTime}, TimeInfo.Now: {TimeInfo.Now} and timeLeft: {timeLeft}");
 
             if (timeLeft <= PrepareToWorkHours)
             {
@@ -32,10 +32,11 @@ namespace RealTime.CustomAI
 
             if (timeLeft <= MaxTravelTime)
             {
+                Log.Debug(LogCategory.Schedule, $"  - Schedule work at {departureTime:dd.MM.yy HH:mm}");
+                schedule.Schedule(ResidentState.GoToWork, departureTime);
+
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
-                    Log.Debug(LogCategory.Schedule, $"  - Schedule work at {departureTime:dd.MM.yy HH:mm}");
-                    schedule.Schedule(ResidentState.GoToWork, departureTime);
                     Log.Debug(LogCategory.Schedule, $"  - Work time in {timeLeft} hours, returning home");
                     schedule.Schedule(ResidentState.GoHome);
                     return true;

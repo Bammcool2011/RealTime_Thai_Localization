@@ -18,7 +18,7 @@ namespace RealTime.CustomAI
             var departureTime = schoolBehavior.ScheduleGoToSchoolTime(ref schedule, currentBuilding, simulationCycle);
 
             float timeLeft = (float)(departureTime - TimeInfo.Now).TotalHours;
-            Log.Debug(LogCategory.Schedule, $"  - departureTime: {departureTime}, TimeInfo.Now: {TimeInfo.Now}");
+            Log.Debug(LogCategory.Schedule, $"  - departureTime: {departureTime}, TimeInfo.Now: {TimeInfo.Now} and timeLeft: {timeLeft}");
 
             if (timeLeft <= PrepareToSchoolHours)
             {
@@ -31,10 +31,11 @@ namespace RealTime.CustomAI
 
             if (timeLeft <= MaxTravelTime)
             {
+                Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
+                schedule.Schedule(ResidentState.GoToSchool, departureTime);
+
                 if (schedule.CurrentState != ResidentState.AtHome)
                 {
-                    Log.Debug(LogCategory.Schedule, $"  - Schedule school at {departureTime:dd.MM.yy HH:mm}");
-                    schedule.Schedule(ResidentState.GoToSchool, departureTime);
                     Log.Debug(LogCategory.Schedule, $"  - School time in {timeLeft} hours, returning home");
                     schedule.Schedule(ResidentState.GoHome);
                     return true;
