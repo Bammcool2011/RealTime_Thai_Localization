@@ -5,6 +5,7 @@ namespace RealTime.CustomAI
     using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
+    using ICities;
     using RealTime.Core;
     using RealTime.GameConnection;
 
@@ -179,8 +180,16 @@ namespace RealTime.CustomAI
         public static bool ShouldHaveBuildingWorkTime(ushort buildingID)
         {
             var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingID];
+            var ai = building.Info.GetAI();
 
-            if(building.Info.GetAI() is OutsideConnectionAI)
+            if (ai is DecorationBuildingAI || ai is OutsideConnectionAI || ai is WaterJunctionAI || ai is CableCarPylonAI ||
+                ai is IntersectionAI || ai is MonorailPylonAI || ai is PowerPoleAI || ai is WildlifeSpawnPointAI || ai is TsunamiBuoyAI ||
+                ai is RadioMastAI || ai is FirewatchTowerAI || ai is EarthquakeSensorAI || ai is DummyBuildingAI)
+            {
+                return false;
+            }
+
+            if (ai is BuildingAI && building.Info.name.Contains("Pillar"))
             {
                 return false;
             }
@@ -201,8 +210,8 @@ namespace RealTime.CustomAI
                 case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4 && BuildingManagerConnection.IsCimCareBuilding(buildingID):
                 case ItemClass.Service.PlayerEducation when BuildingManagerConnection.IsAreaResidentalBuilding(buildingID):
                 case ItemClass.Service.PlayerIndustry when BuildingManagerConnection.IsAreaResidentalBuilding(buildingID):
-                case ItemClass.Service.Water when building.Info.m_buildingAI is WaterFacilityAI waterFacilityAI && waterFacilityAI.RequireRoadAccess() == false:
-                case ItemClass.Service.Electricity when building.Info.m_buildingAI is PowerPlantAI powerPlantAI && powerPlantAI.RequireRoadAccess() == false:
+                case ItemClass.Service.Water when building.Info.m_buildingAI is WaterFacilityAI waterFacilityAI && !waterFacilityAI.RequireRoadAccess():
+                case ItemClass.Service.Electricity when building.Info.m_buildingAI is PowerPlantAI powerPlantAI && !powerPlantAI.RequireRoadAccess():
                     return false;
             }
 
@@ -278,6 +287,250 @@ namespace RealTime.CustomAI
             };
 
             return workTime;
+        }
+
+        public static void UpdateBuildingWorkTime(ushort buildingId, WorkTime workTime)
+        {
+            var building = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId];
+
+            var service = building.Info.m_class.m_service;
+            var subService = building.Info.m_class.m_subService;
+            var level = building.Info.m_class.m_level;
+            var ai = building.Info.m_buildingAI;
+
+            // update buildings 
+            switch (service)
+            {
+                // transport stations and depots
+                case ItemClass.Service.PublicTransport when subService != ItemClass.SubService.PublicTransportPost:
+                    if (workTime.WorkAtNight == false)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = false;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                // set child care and elder care to close at night - other buildings open 24/7
+                case ItemClass.Service.HealthCare:
+                    if (level >= ItemClass.Level.Level4 && workTime.WorkAtNight == true)
+                    {
+                        workTime.WorkShifts = 2;
+                        workTime.WorkAtNight = false;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    else if (level < ItemClass.Level.Level4 && workTime.WorkAtNight == false)
+                    {
+                        workTime.WorkShifts = 2;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = true;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                case ItemClass.Service.PoliceDepartment when subService != ItemClass.SubService.PoliceDepartmentBank:
+                case ItemClass.Service.FireDepartment:
+                    if (workTime.WorkAtNight == false)
+                    {
+                        workTime.WorkShifts = 2;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = true;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                // area main building works 24/7, universities work 2 shifts for night school support
+                case ItemClass.Service.PlayerEducation:
+                case ItemClass.Service.Education when level == ItemClass.Level.Level3:
+                    if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    else if (workTime.WorkShifts != 2)
+                    {
+                        workTime.WorkShifts = 2;
+                        workTime.WorkAtNight = false;
+                        workTime.WorkAtWeekands = false;
+                        workTime.HasExtendedWorkShift = true;
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                // old elementary school and high school - update to 1 shift
+                case ItemClass.Service.Education when level == ItemClass.Level.Level1 || level == ItemClass.Level.Level2:
+                    if (workTime.WorkShifts == 2)
+                    {
+                        workTime.WorkShifts = 1;
+                        workTime.WorkAtNight = false;
+                        workTime.WorkAtWeekands = false;
+                        workTime.HasExtendedWorkShift = true;
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                // open or close farming or forestry buildings according to the advanced automation policy, set 24/7 for main buildings
+                case ItemClass.Service.PlayerIndustry:
+                    if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = true;
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    else if (workTime.IsDefault && workTime.WorkShifts != 3 && (BuildingManagerConnection.IsWarehouseBuilding(buildingId) || BuildingManagerConnection.IsUniqueFactoryBuilding(buildingId)))
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = true;
+                        workTime.HasContinuousWorkShift = false;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    else if (workTime.IsDefault && !workTime.IgnorePolicy && (subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry))
+                    {
+                        bool IsEssential = BuildingManagerConnection.IsEssentialIndustryBuilding(buildingId);
+                        bool need_update1 = false;
+                        if (IsEssential && workTime.WorkShifts != 3)
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                            workTime.WorkAtWeekands = true;
+                            workTime.HasExtendedWorkShift = true;
+                            workTime.HasContinuousWorkShift = false;
+                            need_update1 = true;
+                        }
+                        else if (!IsEssential && workTime.WorkShifts != 2)
+                        {
+                            workTime.WorkShifts = 2;
+                            workTime.WorkAtNight = false;
+                            workTime.WorkAtWeekands = true;
+                            workTime.HasExtendedWorkShift = true;
+                            workTime.HasContinuousWorkShift = false;
+                            need_update1 = true;
+                        }
+                        if(need_update1)
+                        {
+                            SetBuildingWorkTime(buildingId, workTime);
+                        }
+                    }
+                    return;
+
+                // open or close park according to night tours check
+                case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
+                    var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
+                    byte parkId = DistrictManager.instance.GetPark(position);
+                    bool need_update = false;
+                    if (parkId != 0)
+                    {
+                        var park = DistrictManager.instance.m_parks.m_buffer[parkId];
+                        if ((park.m_parkPolicies & DistrictPolicies.Park.NightTours) != 0 && workTime.WorkShifts != 3)
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                            workTime.WorkAtWeekands = true;
+                            workTime.HasExtendedWorkShift = true;
+                            workTime.HasContinuousWorkShift = false;
+                            workTime.IsDefault = true;
+                            need_update = true;
+                        }
+                        else
+                        {
+                            if (workTime.WorkShifts != 2)
+                            {
+                                workTime.WorkShifts = 2;
+                                workTime.WorkAtNight = false;
+                                workTime.WorkAtWeekands = true;
+                                workTime.HasExtendedWorkShift = true;
+                                workTime.HasContinuousWorkShift = false;
+                                workTime.IsDefault = true;
+                                need_update = true;
+                            }
+
+                        }
+                    }
+                    if (need_update)
+                    {
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                case ItemClass.Service.Fishing when level == ItemClass.Level.Level1 && ai is MarketAI:
+                    if (workTime.IsDefault && workTime.WorkShifts == 1)
+                    {
+                        workTime.WorkShifts = 2;
+                        workTime.WorkAtNight = false;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = true;
+                        workTime.HasContinuousWorkShift = false;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialTourist:
+                    if (!workTime.WorkAtNight)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = ShouldOccur(50);
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy && workTime.IsDefault:
+                    if (!workTime.WorkAtNight)
+                    {
+                        workTime.WorkAtNight = true;
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = false;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+
+                case ItemClass.Service.Water when ai is WaterFacilityAI waterFacilityAI && waterFacilityAI.RequireRoadAccess():
+                case ItemClass.Service.Electricity when ai is PowerPlantAI powerPlantAI && powerPlantAI.RequireRoadAccess():
+                    if (!workTime.WorkAtNight)
+                    {
+                        workTime.WorkShifts = 3;
+                        workTime.WorkAtNight = true;
+                        workTime.WorkAtWeekands = true;
+                        workTime.HasExtendedWorkShift = false;
+                        workTime.HasContinuousWorkShift = false;
+                        workTime.IsDefault = true;
+                        SetBuildingWorkTime(buildingId, workTime);
+                    }
+                    return;
+            }
         }
 
         public static bool BuildingWorkTimeExist(ushort buildingID) => BuildingsWorkTime.ContainsKey(buildingID);

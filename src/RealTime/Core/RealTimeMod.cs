@@ -172,8 +172,6 @@ namespace RealTime.Core
 
             var buildings = Singleton<BuildingManager>.instance.m_buildings;
 
-            string[] CarParkingBuildings = ["parking", "garage", "car park", "Parking", "Car Port", "Garage", "Car Park"];
-
             for (ushort buildingId = 0; buildingId < buildings.m_size; buildingId++)
             {
                 var building = buildings.m_buffer[buildingId];
@@ -181,192 +179,15 @@ namespace RealTime.Core
                 {
                     if(BuildingWorkTimeManager.BuildingWorkTimeExist(buildingId))
                     {
+                        if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingId))
+                        {
+                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                            continue;
+                        }
+
                         var workTime = BuildingWorkTimeManager.GetBuildingWorkTime(buildingId);
 
-                        var service = building.Info.m_class.m_service;
-                        var subService = building.Info.m_class.m_subService;
-                        var level = building.Info.m_class.m_level;
-                        var ai = building.Info.m_buildingAI;
-
-                        if (ai is OutsideConnectionAI)
-                        {
-                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                            continue;
-                        }
-
-                        if (ai is WaterFacilityAI waterFacilityAI && waterFacilityAI.RequireRoadAccess() == false)
-                        {
-                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                            continue;
-                        }
-
-                        if (ai is PowerPlantAI powerPlantAI && powerPlantAI.RequireRoadAccess() == false)
-                        {
-                            BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                            continue;
-                        }
-
-                        // update buildings 
-                        switch (service)
-                        {
-                            // ignore residential buildings of any kind
-                            case ItemClass.Service.Residential:
-                                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                                break;
-
-                            // ignore nursing homes and orphanages, set child care and elder care to close at night
-                            case ItemClass.Service.HealthCare when level >= ItemClass.Level.Level4:
-                                if (BuildingManagerConnection.IsCimCareBuilding(buildingId))
-                                {
-                                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                                }
-                                if (workTime.WorkAtNight == true)
-                                {
-                                    workTime.WorkShifts = 2;
-                                    workTime.WorkAtNight = false;
-                                    workTime.WorkAtWeekands = true;
-                                    workTime.HasExtendedWorkShift = false;
-                                    workTime.HasContinuousWorkShift = false;
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                break;
-
-                            // area main building works 24/7, universities work 2 shifts for night school support
-                            case ItemClass.Service.PlayerEducation:
-                            case ItemClass.Service.Education when level == ItemClass.Level.Level3:
-                                if (BuildingManagerConnection.IsAreaMainBuilding(buildingId))
-                                {
-                                    workTime.WorkShifts = 3;
-                                    workTime.WorkAtNight = true;
-                                    workTime.WorkAtWeekands = true;
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                else if (BuildingManagerConnection.IsAreaResidentalBuilding(buildingId))
-                                {
-                                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                                }
-                                else if (workTime.WorkShifts != 2)
-                                {
-                                    workTime.WorkShifts = 2;
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                break;
-
-                            // old elementary school and high school - update to 1 shift
-                            case ItemClass.Service.Education when level == ItemClass.Level.Level1 || level == ItemClass.Level.Level2:
-                                if (workTime.WorkShifts == 2)
-                                {
-                                    workTime.WorkShifts = 1;
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                break;
-
-                            // open or close farming or forestry buildings according to the advanced automation policy, set 24/7 for main buildings
-                            case ItemClass.Service.PlayerIndustry:
-                                if (BuildingManagerConnection.IsAreaResidentalBuilding(buildingId))
-                                {
-                                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                                }
-                                else if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
-                                {
-                                    workTime.WorkShifts = 3;
-                                    workTime.WorkAtNight = true;
-                                    workTime.WorkAtWeekands = true;
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                else if (workTime.IsDefault && workTime.WorkShifts != 3 && (BuildingManagerConnection.IsWarehouseBuilding(buildingId) || BuildingManagerConnection.IsUniqueFactoryBuilding(buildingId)))
-                                {
-                                    workTime.WorkShifts = 3;
-                                    workTime.WorkAtNight = true;
-                                    workTime.WorkAtWeekands = true;
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                else if (workTime.IsDefault && (subService == ItemClass.SubService.PlayerIndustryFarming || subService == ItemClass.SubService.PlayerIndustryForestry))
-                                {
-                                    if(workTime.IgnorePolicy == false)
-                                    {
-                                        bool IsEssential = BuildingManagerConnection.IsEssentialIndustryBuilding(buildingId);
-                                        if (IsEssential)
-                                        {
-                                            workTime.WorkShifts = 3;
-                                            workTime.WorkAtNight = true;
-                                        }
-                                        else
-                                        {
-                                            workTime.WorkShifts = 2;
-                                            workTime.WorkAtNight = false;
-                                        }
-                                        BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                    }
-                                    
-                                }
-                                break;
-
-                            // open or close park according to night tours check
-                            case ItemClass.Service.Beautification when subService == ItemClass.SubService.BeautificationParks:
-                                var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
-                                byte parkId = DistrictManager.instance.GetPark(position);
-                                bool need_update = false;
-                                if(parkId != 0)
-                                {
-                                    var park = DistrictManager.instance.m_parks.m_buffer[parkId];
-                                    if ((park.m_parkPolicies & DistrictPolicies.Park.NightTours) != 0 && workTime.WorkShifts != 3)
-                                    {
-                                        workTime.WorkShifts = 3;
-                                        workTime.WorkAtNight = true;
-                                        need_update = true;
-                                    }
-                                    else
-                                    {
-                                        if(workTime.WorkShifts != 2)
-                                        {
-                                            workTime.WorkShifts = 2;
-                                            workTime.WorkAtNight = false;
-                                            need_update = true;
-                                        }
-                                        
-                                    }
-                                }
-                                if(need_update)
-                                {
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                break;
-
-                            // car parking buildings - remove worktime
-                            case ItemClass.Service.Beautification:
-
-                                if (CarParkingBuildings.Any(s => building.Info.name.Contains(s)))
-                                {
-                                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
-                                }
-                                break;
-
-                            case ItemClass.Service.Fishing when level == ItemClass.Level.Level1 && ai is MarketAI:
-                                if (workTime.IsDefault && workTime.WorkShifts == 1)
-                                {
-                                    workTime.WorkShifts = 2;
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                break;
-
-                            case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialTourist:
-                                if (!workTime.WorkAtNight)
-                                {
-                                    workTime = BuildingWorkTimeManager.CreateDefaultBuildingWorkTime(buildingId, building.Info);
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                break;
-
-                            case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy:
-                                if (!workTime.WorkAtNight)
-                                {
-                                    workTime = BuildingWorkTimeManager.CreateDefaultBuildingWorkTime(buildingId, building.Info);
-                                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
-                                }
-                                break;
-
-                        }
+                        BuildingWorkTimeManager.UpdateBuildingWorkTime(buildingId, workTime);
                     }
                 }
             }

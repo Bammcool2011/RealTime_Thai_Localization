@@ -1089,12 +1089,13 @@ namespace RealTime.CustomAI
             var building = BuildingManager.instance.m_buildings.m_buffer[buildingId];
             BuildingWorkTimeManager.WorkTime workTime;
 
+            if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingId))
+            {
+                return true;
+            }
+
             if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingId))
             {
-                if (!BuildingWorkTimeManager.ShouldHaveBuildingWorkTime(buildingId))
-                {
-                    return true;
-                }
                 workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);
             }
             else
