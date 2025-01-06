@@ -217,6 +217,8 @@ namespace RealTime.CustomAI
         {
             float result = schedule.CurrentState == ResidentState.AtHome ? schedule.TravelTimeToWork : 0;
 
+            Log.Debug(LogCategory.Schedule, $"  - schedule CurrentState is {schedule.CurrentState}, schedule TravelTimeToWork is {schedule.TravelTimeToWork}, result is {result}");
+
             if (result <= 0)
             {
                 result = travelBehavior.GetEstimatedTravelTime(buildingId, schedule.SchoolBuilding);

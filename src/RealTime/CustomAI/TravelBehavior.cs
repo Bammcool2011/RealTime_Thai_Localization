@@ -60,10 +60,20 @@ namespace RealTime.CustomAI
             }
 
             float distance = buildingManager.GetDistanceBetweenBuildings(building1, building2);
+
+            Log.Debug(LogCategory.Schedule, $"  - distance beetween {building1} and {building2} is {distance}, min travel time is {MinTravelTime}");
+
             if (distance == 0)
             {
                 return MinTravelTime;
             }
+
+            float cyclePeriod = SimulationManager.DAYTIME_FRAME_TO_HOUR * (0xFFF + 1);
+
+            Log.Debug(LogCategory.Schedule, $"  - travel distance per cycle is {travelDistancePerCycle}, cycle period is {cyclePeriod}, average travel speed per hour is {averageTravelSpeedPerHour}");
+
+            Log.Debug(LogCategory.Schedule, $"  - min travel time is {MinTravelTime}, max travel time is {MaxTravelTime}, average travel speed per hour is {averageTravelSpeedPerHour}");
+
 
             return FastMath.Clamp(distance / averageTravelSpeedPerHour, MinTravelTime, MaxTravelTime);
         }
