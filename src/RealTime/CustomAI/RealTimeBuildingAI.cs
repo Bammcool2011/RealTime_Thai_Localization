@@ -1178,6 +1178,49 @@ namespace RealTime.CustomAI
                 }
             }
 
+            if (building.Info.m_class.m_service == ItemClass.Service.Beautification &&
+                building.Info.m_class.m_subService == ItemClass.SubService.BeautificationParks
+                && !workTime.IgnorePolicy && workTime.IsDefault)
+            {
+                var position = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
+                byte parkId = DistrictManager.instance.GetPark(position);
+                bool need_update = false;
+                if (parkId != 0)
+                {
+                    var park = DistrictManager.instance.m_parks.m_buffer[parkId];
+                    if ((park.m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
+                    {
+                        if (workTime.WorkShifts != 3)
+                        {
+                            workTime.WorkShifts = 3;
+                            workTime.WorkAtNight = true;
+                            workTime.WorkAtWeekands = true;
+                            workTime.HasExtendedWorkShift = true;
+                            workTime.HasContinuousWorkShift = false;
+                            workTime.IsDefault = true;
+                            need_update = true;
+                        }
+                    }
+                    else
+                    {
+                        if (workTime.WorkShifts != 2)
+                        {
+                            workTime.WorkShifts = 2;
+                            workTime.WorkAtNight = false;
+                            workTime.WorkAtWeekands = true;
+                            workTime.HasExtendedWorkShift = true;
+                            workTime.HasContinuousWorkShift = false;
+                            workTime.IsDefault = true;
+                            need_update = true;
+                        }
+                    }
+                }
+                if (need_update)
+                {
+                    BuildingWorkTimeManager.SetBuildingWorkTime(buildingId, workTime);
+                }
+            }
+
             // WorkForceMatters setting is enabled and no one at work - building will not work
             if (config.WorkForceMatters && GetWorkersInBuilding(buildingId) == 0)
             {
