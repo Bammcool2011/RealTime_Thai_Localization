@@ -301,6 +301,15 @@ namespace RealTime.CustomAI
             // update buildings 
             switch (service)
             {
+                case ItemClass.Service.Office when workTime.IsDefault && workTime.WorkShifts == 2:
+                    workTime.WorkShifts = 1;
+                    workTime.WorkAtNight = false;
+                    workTime.WorkAtWeekands = false;
+                    workTime.HasExtendedWorkShift = false;
+                    workTime.HasContinuousWorkShift = false;
+                    SetBuildingWorkTime(buildingId, workTime);
+                    return;
+
                 // transport stations and depots
                 case ItemClass.Service.PublicTransport when subService != ItemClass.SubService.PublicTransportPost:
                     if (workTime.WorkAtNight == false)
