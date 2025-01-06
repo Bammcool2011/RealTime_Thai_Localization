@@ -5,7 +5,6 @@ namespace RealTime.CustomAI
     using System.Collections.Generic;
     using System.Linq;
     using ColossalFramework;
-    using ICities;
     using RealTime.Core;
     using RealTime.GameConnection;
 
@@ -184,7 +183,8 @@ namespace RealTime.CustomAI
 
             if (ai is DecorationBuildingAI || ai is OutsideConnectionAI || ai is WaterJunctionAI || ai is CableCarPylonAI ||
                 ai is IntersectionAI || ai is MonorailPylonAI || ai is PowerPoleAI || ai is WildlifeSpawnPointAI || ai is TsunamiBuoyAI ||
-                ai is RadioMastAI || ai is FirewatchTowerAI || ai is EarthquakeSensorAI || ai is DummyBuildingAI)
+                ai is RadioMastAI || ai is FirewatchTowerAI || ai is EarthquakeSensorAI || ai is DummyBuildingAI || ai is PowerLineAI ||
+                ai is AirportGateAI || ai is AirportCargoGateAI)
             {
                 return false;
             }
@@ -449,15 +449,18 @@ namespace RealTime.CustomAI
                     if (parkId != 0)
                     {
                         var park = DistrictManager.instance.m_parks.m_buffer[parkId];
-                        if ((park.m_parkPolicies & DistrictPolicies.Park.NightTours) != 0 && workTime.WorkShifts != 3)
+                        if ((park.m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
                         {
-                            workTime.WorkShifts = 3;
-                            workTime.WorkAtNight = true;
-                            workTime.WorkAtWeekands = true;
-                            workTime.HasExtendedWorkShift = true;
-                            workTime.HasContinuousWorkShift = false;
-                            workTime.IsDefault = true;
-                            need_update = true;
+                            if(workTime.WorkShifts != 3)
+                            {
+                                workTime.WorkShifts = 3;
+                                workTime.WorkAtNight = true;
+                                workTime.WorkAtWeekands = true;
+                                workTime.HasExtendedWorkShift = true;
+                                workTime.HasContinuousWorkShift = false;
+                                workTime.IsDefault = true;
+                                need_update = true;
+                            }
                         }
                         else
                         {
@@ -471,7 +474,6 @@ namespace RealTime.CustomAI
                                 workTime.IsDefault = true;
                                 need_update = true;
                             }
-
                         }
                     }
                     if (need_update)
