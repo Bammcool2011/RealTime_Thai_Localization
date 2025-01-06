@@ -116,7 +116,7 @@ namespace RealTime.Patches
                 num2 += (int)campus.m_finalTicketIncome;
                 if (campus.m_mainGate != 0)
                 {
-                    float academicYearProgress = campus.GetAcademicYearProgress();
+                    float academicYearProgress = __instance.GetAcademicYearProgress();
                     if (campus.m_previousYearProgress > academicYearProgress)
                     {
                         campus.m_previousYearProgress = academicYearProgress;
@@ -127,7 +127,7 @@ namespace RealTime.Patches
                     float num4 = (campus.m_academicStaffCount - Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin) / (float)(Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMax - Singleton<DistrictManager>.instance.m_properties.m_parkProperties.m_campusProperties.m_academicStaffCountMin);
                     campus.m_academicStaffAccumulation += num3 * num4;
                     campus.m_academicStaffAccumulation = Mathf.Clamp(campus.m_academicStaffAccumulation, 0f, 1f);
-                    int num5 = (int)(campus.CalculateAcademicStaffWages() / 0.16f) / 100;
+                    int num5 = (int)(__instance.CalculateAcademicStaffWages() / 0.16f) / 100;
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num5, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num5;
                     if (campus.m_awayMatchesDone == null || campus.m_awayMatchesDone.Length != 5)
@@ -178,14 +178,14 @@ namespace RealTime.Patches
                 }
                 if (campus.m_coachCount != 0)
                 {
-                    int num6 = (int)((float)campus.CalculateCoachingStaffCost() / 0.16f) / 100;
+                    int num6 = (int)(__instance.CalculateCoachingStaffCost() / 0.16f) / 100;
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num6, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num6;
                 }
                 int activeArenasCount = campus.GetActiveArenasCount();
                 if (campus.m_cheerleadingBudget != 0)
                 {
-                    int num7 = (int)((float)(campus.m_cheerleadingBudget * activeArenasCount) / 0.16f);
+                    int num7 = (int)(campus.m_cheerleadingBudget * activeArenasCount / 0.16f);
                     Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.Maintenance, num7, ItemClass.Service.PlayerEducation, campus.CampusTypeToSubservice(), ItemClass.Level.None);
                     num2 -= num7;
                 }
