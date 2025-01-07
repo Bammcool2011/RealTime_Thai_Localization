@@ -54,5 +54,8 @@ namespace RealTime.Core
 
         /// <summary>The Workshop ID of the 'CombinedAIS' mod.</summary>
         public const ulong CombinedAIS = 3158078540ul;
+
+        /// <summary>The Workshop ID of the 'AdvancedOutsideConnections' mod.</summary>
+        public const ulong AdvancedOutsideConnections = 2053500739ul;
     }
 }

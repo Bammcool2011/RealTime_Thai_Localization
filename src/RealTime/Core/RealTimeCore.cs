@@ -225,6 +225,7 @@ namespace RealTime.Core
             HumanAIPatch.RealTimeBuildingAI = null;
             HumanAIPatch.RealTimeResidentAI = null;
             OutsideConnectionAIPatch.SpareTimeBehavior = null;
+            OutsideConnectionAIPatch.Compatibility = null;
             ResidentAIPatch.RealTimeBuildingAI = null;
             ResidentAIPatch.RealTimeResidentAI = null;
             ResidentAIPatch.TimeInfo = null;
@@ -353,9 +354,6 @@ namespace RealTime.Core
             var workBehavior = new WorkBehavior(config, gameConnections.Random, gameConnections.BuildingManager, timeInfo, travelBehavior, eventManager);
             var schoolBehavior = new SchoolBehavior(config, gameConnections.Random, timeInfo, travelBehavior);
 
-            
-            OutsideConnectionAIPatch.SpareTimeBehavior = spareTimeBehavior;
-
             var realTimeBuildingAI = new RealTimeBuildingAI(
                 config,
                 timeInfo,
@@ -408,6 +406,9 @@ namespace RealTime.Core
 
             HumanAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             HumanAIPatch.RealTimeResidentAI = realTimeResidentAI;
+
+            OutsideConnectionAIPatch.SpareTimeBehavior = spareTimeBehavior;
+            OutsideConnectionAIPatch.Compatibility = compatibility;
 
             ResidentAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
             ResidentAIPatch.RealTimeResidentAI = realTimeResidentAI;
