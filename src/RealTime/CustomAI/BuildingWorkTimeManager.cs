@@ -257,7 +257,7 @@ namespace RealTime.CustomAI
                 ExtendedWorkShift = false;
                 ContinuousWorkShift = false;
             }
-            else if (BuildingManagerConnection.IsBuildingNoiseRestricted(buildingID))
+            else if (service == ItemClass.Service.Commercial && sub_service == ItemClass.SubService.CommercialLeisure && BuildingManagerConnection.IsBuildingNoiseRestricted(buildingID))
             {
                 OpenAtNight = false;
             }
@@ -517,13 +517,52 @@ namespace RealTime.CustomAI
                     return;
 
                 case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy && workTime.IsDefault:
-                    if (!workTime.WorkAtNight)
+                    bool isNoiseRestricted = BuildingManagerConnection.IsBuildingNoiseRestricted(buildingId);
+                    bool updated = false;
+                    if (isNoiseRestricted)
                     {
-                        workTime.WorkAtNight = true;
-                        workTime.WorkShifts = 3;
-                        workTime.WorkAtWeekands = true;
-                        workTime.HasExtendedWorkShift = false;
-                        workTime.HasContinuousWorkShift = false;
+                        if (workTime.HasContinuousWorkShift)
+                        {
+                            if (workTime.WorkShifts == 2)
+                            {
+                                workTime.WorkShifts = 1;
+                                workTime.WorkAtNight = false;
+                                updated = true;
+                            }
+                        }
+                        else
+                        {
+                            if (workTime.WorkShifts == 3)
+                            {
+                                workTime.WorkShifts = 2;
+                                workTime.WorkAtNight = false;
+                                updated = true;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (workTime.HasContinuousWorkShift)
+                        {
+                            if (workTime.WorkShifts == 1)
+                            {
+                                workTime.WorkShifts = 2;
+                                workTime.WorkAtNight = true;
+                                updated = true;
+                            }
+                        }
+                        else
+                        {
+                            if (workTime.WorkShifts == 2)
+                            {
+                                workTime.WorkShifts = 3;
+                                workTime.WorkAtNight = true;
+                                updated = true;
+                            }
+                        }
+                    }
+                    if (updated)
+                    {
                         SetBuildingWorkTime(buildingId, workTime);
                     }
                     return;
