@@ -190,6 +190,10 @@ namespace RealTime.Core
                         BuildingWorkTimeManager.UpdateBuildingWorkTime(buildingId, workTime);
                     }
                 }
+                else
+                {
+                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingId);
+                }
             }
         }
 

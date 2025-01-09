@@ -369,6 +369,22 @@ namespace RealTime.Patches
         private sealed class PlayerBuildingAI_SimulationStepActive
         {
             [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
+            private static void Prefix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+            {
+                if ((buildingData.m_flags & Building.Flags.Collapsed) != 0)
+                {
+                    if (BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
+                    {
+                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+                    }
+                    if (BuildingManagerConnection.IsHotel(buildingID) && HotelManager.HotelExist(buildingID))
+                    {
+                        HotelManager.RemoveHotel(buildingID);
+                    }
+                }
+            }
+
+            [HarmonyPatch(typeof(PlayerBuildingAI), "SimulationStepActive")]
             [HarmonyTranspiler]
             public static IEnumerable<CodeInstruction> TranspileSimulationStepActive(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
             {
@@ -553,6 +569,27 @@ namespace RealTime.Patches
                 if (__state != buildingData.m_workerProblemTimer && RealTimeBuildingAI != null)
                 {
                     RealTimeBuildingAI.ProcessWorkerProblems(buildingID, __state);
+                }
+            }
+        }
+
+        [HarmonyPatch]
+        private sealed class PrivateBuildingAI_SimulationStepActive
+        {
+            [HarmonyPatch(typeof(PrivateBuildingAI), "SimulationStepActive")]
+            [HarmonyPrefix]
+            private static void Prefix(ushort buildingID, ref Building buildingData, ref Building.Frame frameData)
+            {
+                if ((buildingData.m_flags & Building.Flags.Abandoned) != 0 || (buildingData.m_flags & Building.Flags.Collapsed) != 0)
+                {
+                    if (BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
+                    {
+                        BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
+                    }
+                    if (BuildingManagerConnection.IsHotel(buildingID) && HotelManager.HotelExist(buildingID))
+                    {
+                        HotelManager.RemoveHotel(buildingID);
+                    }
                 }
             }
         }
@@ -1824,15 +1861,14 @@ namespace RealTime.Patches
             [HarmonyPrefix]
             public static void Prefix(PrivateBuildingAI __instance, ushort buildingID, ref Building data)
             {
-                BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
-                if (BuildingManagerConnection.IsHotel(buildingID))
+                if (BuildingWorkTimeManager.BuildingWorkTimeExist(buildingID))
                 {
-                    if (HotelManager.HotelExist(buildingID))
-                    {
-                        HotelManager.RemoveHotel(buildingID);
-                    }
+                    BuildingWorkTimeManager.RemoveBuildingWorkTime(buildingID);
                 }
-
+                if (BuildingManagerConnection.IsHotel(buildingID) && HotelManager.HotelExist(buildingID))
+                {
+                    HotelManager.RemoveHotel(buildingID);
+                }
             } 
         }
 

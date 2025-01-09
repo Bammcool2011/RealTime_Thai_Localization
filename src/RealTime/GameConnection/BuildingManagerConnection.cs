@@ -254,6 +254,10 @@ namespace RealTime.GameConnection
 
             var location = BuildingManager.instance.m_buildings.m_buffer[buildingId].m_position;
             byte district = DistrictManager.instance.GetDistrict(location);
+            if(district == 0)
+            {
+                return false;
+            }
             var policies = DistrictManager.instance.m_districts.m_buffer[district].m_cityPlanningPolicies;
             return (policies & DistrictPolicies.CityPlanning.NoLoudNoises) != 0;
         }

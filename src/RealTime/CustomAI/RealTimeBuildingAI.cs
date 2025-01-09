@@ -1094,6 +1094,11 @@ namespace RealTime.CustomAI
                 return true;
             }
 
+            if((building.m_flags & Building.Flags.Abandoned) != 0 || (building.m_flags & Building.Flags.Collapsed) != 0)
+            {
+                return true;
+            }
+
             if (!BuildingWorkTimeManager.BuildingWorkTimeExist(buildingId))
             {
                 workTime = BuildingWorkTimeManager.CreateBuildingWorkTime(buildingId, building.Info);

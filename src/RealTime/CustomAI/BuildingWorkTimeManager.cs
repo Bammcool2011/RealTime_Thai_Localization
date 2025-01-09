@@ -310,8 +310,9 @@ namespace RealTime.CustomAI
                     SetBuildingWorkTime(buildingId, workTime);
                     return;
 
-                // transport stations and depots
+                // transport stations and depots and garabage
                 case ItemClass.Service.PublicTransport when subService != ItemClass.SubService.PublicTransportPost:
+                case ItemClass.Service.Garbage:
                     if (workTime.WorkAtNight == false)
                     {
                         workTime.WorkShifts = 3;
