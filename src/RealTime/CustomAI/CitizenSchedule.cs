@@ -4,6 +4,7 @@ namespace RealTime.CustomAI
 {
     using System;
     using RealTime.Core;
+    using RealTime.Managers;
     using static Constants;
 
     /// <summary>A container struct that holds information about the detailed resident citizen state.

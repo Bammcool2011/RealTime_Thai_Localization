@@ -12,9 +12,8 @@ namespace RealTime.Core
     using ColossalFramework.Plugins;
     using ICities;
     using RealTime.Config;
-    using RealTime.CustomAI;
-    using RealTime.GameConnection;
     using RealTime.Localization;
+    using RealTime.Managers;
     using RealTime.UI;
     using RealTime.Utils;
     using SkyTools.Configuration;
@@ -112,15 +111,15 @@ namespace RealTime.Core
             base.OnCreated(loading);
             try
             {
-                FireBurnTimeManager.Init();
                 BuildingWorkTimeManager.Init();
+                FireBurnTimeManager.Init();
                 HotelManager.Init();
             }
             catch (Exception e)
             {
                 Debug.LogError(e.ToString());
-                FireBurnTimeManager.Deinit();
                 BuildingWorkTimeManager.Deinit();
+                FireBurnTimeManager.Deinit();
             }
         }
 
@@ -148,7 +147,7 @@ namespace RealTime.Core
 
             if(configProvider.Configuration.LoggingMode)
             {
-                Log.SetupDebug(Name, LogCategory.Generic, LogCategory.Movement, LogCategory.Simulation, LogCategory.State, LogCategory.Schedule);
+                Log.SetupDebug(Name, LogCategory.Generic, LogCategory.Movement, LogCategory.Simulation, LogCategory.State, LogCategory.Schedule, LogCategory.Events);
             }
             else
             {

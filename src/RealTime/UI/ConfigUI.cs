@@ -7,7 +7,7 @@ namespace RealTime.UI
     using System.Linq;
     using System.Reflection;
     using RealTime.Config;
-    using RealTime.CustomAI;
+    using RealTime.Managers;
     using RealTime.Patches;
     using SkyTools.Configuration;
     using SkyTools.Localization;

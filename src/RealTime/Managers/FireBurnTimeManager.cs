@@ -1,6 +1,6 @@
 // FireBurnTimeManager.cs
 
-namespace RealTime.CustomAI
+namespace RealTime.Managers
 {
     using System;
     using System.Collections.Generic;

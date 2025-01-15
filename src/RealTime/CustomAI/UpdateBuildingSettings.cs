@@ -3,6 +3,7 @@ namespace RealTime.CustomAI
     using System.Collections.Generic;
     using ColossalFramework;
     using RealTime.Config;
+    using RealTime.Managers;
 
     internal static class UpdateBuildingSettings
     {

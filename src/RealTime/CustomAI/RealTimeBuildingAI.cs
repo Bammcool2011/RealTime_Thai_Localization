@@ -9,6 +9,7 @@ namespace RealTime.CustomAI
     using ICities;
     using RealTime.Config;
     using RealTime.GameConnection;
+    using RealTime.Managers;
     using RealTime.Simulation;
     using SkyTools.Tools;
     using UnityEngine;

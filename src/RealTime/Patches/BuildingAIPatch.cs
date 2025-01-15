@@ -14,6 +14,7 @@ namespace RealTime.Patches
     using RealTime.Core;
     using RealTime.CustomAI;
     using RealTime.GameConnection;
+    using RealTime.Managers;
     using RealTime.Simulation;
     using UnityEngine;
 

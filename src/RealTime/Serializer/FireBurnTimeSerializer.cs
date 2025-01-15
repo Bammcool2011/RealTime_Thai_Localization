@@ -3,7 +3,7 @@
 namespace RealTime.Serializer
 {
     using System;
-    using RealTime.CustomAI;
+    using RealTime.Managers;
     using UnityEngine;
 
     public class FireBurnTimeSerializer

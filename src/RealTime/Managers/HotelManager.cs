@@ -1,6 +1,5 @@
-namespace RealTime.CustomAI
+namespace RealTime.Managers
 {
-    using System;
     using System.Collections.Generic;
     using ColossalFramework;
 
@@ -27,7 +26,7 @@ namespace RealTime.CustomAI
                 return 0;
             }
 
-            for(int i = HotelsList.Count - 1; i >= 0; i--)
+            for (int i = HotelsList.Count - 1; i >= 0; i--)
             {
                 var hotelBuilding = Singleton<BuildingManager>.instance.m_buildings.m_buffer[HotelsList[i]];
                 if (hotelBuilding.m_roomUsed >= hotelBuilding.m_roomMax)

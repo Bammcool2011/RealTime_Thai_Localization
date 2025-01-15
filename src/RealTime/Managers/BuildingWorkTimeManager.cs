@@ -1,6 +1,6 @@
 // BuildingWorkTimeManager.cs
 
-namespace RealTime.CustomAI
+namespace RealTime.Managers
 {
     using System.Collections.Generic;
     using System.Linq;
@@ -122,7 +122,7 @@ namespace RealTime.CustomAI
                 defaultBuildingAIstr = "ExtendedPostOfficeAI";
             }
             int index = BuildingsWorkTimePrefabs.FindIndex(item => item.InfoName == infoName &&
-            defaultBuildingAIstr != "" ? (item.BuildingAI == buildingAIstr || item.BuildingAI == defaultBuildingAIstr) : item.BuildingAI == buildingAIstr);
+            defaultBuildingAIstr != "" ? item.BuildingAI == buildingAIstr || item.BuildingAI == defaultBuildingAIstr : item.BuildingAI == buildingAIstr);
             return index;
         }
 
@@ -146,7 +146,7 @@ namespace RealTime.CustomAI
             if (index != -1)
             {
                 BuildingsWorkTimePrefabs[index] = workTimePrefab;
-            }            
+            }
         }
 
         public static void CreatePrefab(WorkTimePrefab workTimePrefab)
@@ -444,7 +444,7 @@ namespace RealTime.CustomAI
                             workTime.HasContinuousWorkShift = false;
                             need_update1 = true;
                         }
-                        if(need_update1)
+                        if (need_update1)
                         {
                             SetBuildingWorkTime(buildingId, workTime);
                         }
@@ -461,7 +461,7 @@ namespace RealTime.CustomAI
                         var park = DistrictManager.instance.m_parks.m_buffer[parkId];
                         if ((park.m_parkPolicies & DistrictPolicies.Park.NightTours) != 0)
                         {
-                            if(workTime.WorkShifts != 3)
+                            if (workTime.WorkShifts != 3)
                             {
                                 workTime.WorkShifts = 3;
                                 workTime.WorkAtNight = true;
@@ -593,12 +593,12 @@ namespace RealTime.CustomAI
             if (BuildingsWorkTime.TryGetValue(buildingID, out var _))
             {
                 BuildingsWorkTime[buildingID] = workTime;
-            }    
+            }
         }
 
         public static void RemoveBuildingWorkTime(ushort buildingID)
         {
-            if(BuildingsWorkTime.TryGetValue(buildingID, out var _))
+            if (BuildingsWorkTime.TryGetValue(buildingID, out var _))
             {
                 BuildingsWorkTime.Remove(buildingID);
             }
@@ -724,9 +724,9 @@ namespace RealTime.CustomAI
 
         private static int GetBuildingWorkShiftCount(ItemClass.Service service, ItemClass.SubService subService, ItemClass.Level level, BuildingAI ai, bool activeAtNight, bool continuousWorkShift)
         {
-            if(activeAtNight)
+            if (activeAtNight)
             {
-                if(continuousWorkShift)
+                if (continuousWorkShift)
                 {
                     return 2;
                 }
