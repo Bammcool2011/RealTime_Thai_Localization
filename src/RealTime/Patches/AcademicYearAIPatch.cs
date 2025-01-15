@@ -6,6 +6,7 @@ namespace RealTime.Patches
     using HarmonyLib;
     using RealTime.CustomAI;
     using RealTime.GameConnection;
+    using RealTime.Managers;
     using SkyTools.Tools;
 
     [HarmonyPatch]
@@ -22,9 +23,7 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool GetYearProgress(ref EventData data, ref float __result)
         {
-            uint didLastYearEnd = Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_building].m_garbageTrafficRate;
-
-            if (didLastYearEnd == 1)
+            if (AcademicYearManager.AcademicYearData.DidLastYearEnd)
             {
                 __result = 100f;
                 return false;
@@ -36,11 +35,15 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool EndEvent(ref EventData data)
         {
-            if (!CanAcademicYearEndorBegin(data.m_building))
+            if(!RealTimeBuildingAI.IsBuildingWorking(data.m_building))
             {
                 return false;
             }
-            Singleton<BuildingManager>.instance.m_buildings.m_buffer[data.m_building].m_cargoTrafficRate = SimulationManager.instance.m_currentFrameIndex;
+            if (!AcademicYearManager.CanAcademicYearEndorBegin(TimeInfo))
+            {
+                return false;
+            }
+            AcademicYearManager.AcademicYearData.ActualAcademicYearEndFrame = SimulationManager.instance.m_currentFrameIndex;
             return true;
         }
 
@@ -98,18 +101,6 @@ namespace RealTime.Patches
             return false;
         }
 
-        // dont start or end academic year if night time or weekend or building is closed or the hour is not between 9 am and 10 am
-        public static bool CanAcademicYearEndorBegin(ushort buildingId)
-        {
-            if (TimeInfo.IsNightTime || TimeInfo.Now.IsWeekend() || !RealTimeBuildingAI.IsBuildingWorking(buildingId))
-            {
-                return false;
-            }
-            if (TimeInfo.CurrentHour < 9f || TimeInfo.CurrentHour > 10f)
-            {
-                return false;
-            }
-            return true;
-        }
+        
     }
 }

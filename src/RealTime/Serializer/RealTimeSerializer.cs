@@ -57,6 +57,15 @@ namespace RealTime.Serializer
                                 CheckStartTuple("BuildingWorkTimeSerializer", SaveGameFileVersion, Data, ref Index);
                                 BuildingWorkTimeSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
                                 CheckEndTuple("BuildingWorkTimeSerializer", SaveGameFileVersion, Data, ref Index);
+
+                                if (Index == Data.Length)
+                                {
+                                    break;
+                                }
+
+                                CheckStartTuple("GraduationSerializer", SaveGameFileVersion, Data, ref Index);
+                                AcademicYearSerializer.LoadData(SaveGameFileVersion, Data, ref Index);
+                                CheckEndTuple("GraduationSerializer", SaveGameFileVersion, Data, ref Index);
                                 break;
                             }
                         }
@@ -109,6 +118,11 @@ namespace RealTime.Serializer
                     // buildings work time settings
                     StorageData.WriteUInt32(uiTUPLE_START, Data);
                     BuildingWorkTimeSerializer.SaveData(Data);
+                    StorageData.WriteUInt32(uiTUPLE_END, Data);
+
+                    // academic year data settings
+                    StorageData.WriteUInt32(uiTUPLE_START, Data);
+                    AcademicYearSerializer.SaveData(Data);
                     StorageData.WriteUInt32(uiTUPLE_END, Data);
 
                     BuildingWorkTimeGlobalConfig.Config.Serialize();

@@ -2,11 +2,16 @@ namespace RealTime.Patches
 {
     using ColossalFramework;
     using HarmonyLib;
+    using RealTime.CustomAI;
+    using RealTime.GameConnection;
+    using RealTime.Managers;
 
     [HarmonyPatch]
     internal static class EventManagerPatch
     {
-        public static bool didLastYearEnd = false;
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
+
+        public static TimeInfo TimeInfo { get; set; }
 
         [HarmonyPatch(typeof(EventManager), "CreateEvent")]
         [HarmonyPrefix]
@@ -29,7 +34,12 @@ namespace RealTime.Patches
                 if (__instance.m_events.m_size < 256)
                 {
                     eventIndex = (ushort)__instance.m_events.m_size;
-                    if (!AcademicYearAIPatch.CanAcademicYearEndorBegin(building))
+                    if(!RealTimeBuildingAI.IsBuildingWorking(building))
+                    {
+                        __result = false;
+                        return false;
+                    }
+                    if (!AcademicYearManager.CanAcademicYearEndorBegin(TimeInfo))
                     {
                         __result = false;
                         return false;
@@ -39,16 +49,16 @@ namespace RealTime.Patches
                     // first year or not first year and 24 hours have passed since the last year ended
                     if (eventIndex != 0)
                     {
-                        float hours_since_last_year_ended = CalculateHoursSinceLastYearEnded(eventData.m_building);
-                        
+                        float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded();
+
                         if (hours_since_last_year_ended >= 24f)
                         {
                             can_start_new_year = true;
-                            buildingManager.m_buildings.m_buffer[building].m_garbageTrafficRate = 0;
+                            AcademicYearManager.AcademicYearData.DidLastYearEnd = false;
                         }
                         else
                         {
-                            buildingManager.m_buildings.m_buffer[building].m_garbageTrafficRate = 1;
+                            AcademicYearManager.AcademicYearData.DidLastYearEnd = true;
                         }
                     }
                     else
@@ -73,12 +83,5 @@ namespace RealTime.Patches
             eventIndex = 0;
             return true;
         }
-
-        public static float CalculateHoursSinceLastYearEnded(ushort buildingId)
-        {
-            uint actualEndFrame = Singleton<BuildingManager>.instance.m_buildings.m_buffer[buildingId].m_cargoTrafficRate;
-            return (SimulationManager.instance.m_currentFrameIndex - actualEndFrame) * SimulationManager.DAYTIME_FRAME_TO_HOUR;
-        }
-
     }
 }
