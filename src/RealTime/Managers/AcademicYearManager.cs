@@ -16,6 +16,8 @@ namespace RealTime.Managers
             public bool DidGraduationStart;
             public float GraduationStartTime;
             public uint ActualAcademicYearEndFrame;
+            public uint MainCampusBuildingCreateFrame;
+            public bool IsFirstAcademicYear;
         }
 
         public static void Init() => MainCampusBuildingsList = [];
@@ -33,7 +35,9 @@ namespace RealTime.Managers
                 DidLastYearEnd = false,
                 DidGraduationStart = false,
                 GraduationStartTime = 0,
-                ActualAcademicYearEndFrame = 0
+                ActualAcademicYearEndFrame = 0,
+                MainCampusBuildingCreateFrame = SimulationManager.instance.m_currentFrameIndex,
+                IsFirstAcademicYear = true
             };
             
             MainCampusBuildingsList.Add(buildingID, academicYearData);
@@ -47,8 +51,14 @@ namespace RealTime.Managers
         public static float CalculateHoursSinceLastYearEnded(ushort buildingID)
         {
             var academicYearData = GetAcademicYearData(buildingID);
-
             return (SimulationManager.instance.m_currentFrameIndex - academicYearData.ActualAcademicYearEndFrame) * SimulationManager.DAYTIME_FRAME_TO_HOUR;
+        }
+
+        // calculate hours since the main campus building was created
+        public static float CalculateHoursSinceCampusCreated(ushort buildingID)
+        {
+            var academicYearData = GetAcademicYearData(buildingID);
+            return (SimulationManager.instance.m_currentFrameIndex - academicYearData.MainCampusBuildingCreateFrame) * SimulationManager.DAYTIME_FRAME_TO_HOUR;
         }
 
         // dont start or end academic year if night time or weekend or the hour is not between 9 am and 10 am

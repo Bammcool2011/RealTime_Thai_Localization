@@ -24,7 +24,11 @@ namespace RealTime.Patches
         public static bool GetYearProgress(ref EventData data, ref float __result)
         {
             var academicYearData = AcademicYearManager.GetAcademicYearData(data.m_building);
-
+            if (academicYearData.IsFirstAcademicYear)
+            {
+                __result = 0f;
+                return false;
+            }
             if (academicYearData.DidLastYearEnd)
             {
                 __result = 100f;

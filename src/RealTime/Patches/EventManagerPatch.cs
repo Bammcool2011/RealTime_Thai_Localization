@@ -49,18 +49,35 @@ namespace RealTime.Patches
                             __result = false;
                             return false;
                         }
-                        float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded(building);
+
                         var academicYearData = AcademicYearManager.GetAcademicYearData(building);
-                        if (hours_since_last_year_ended >= 24f)
+
+                        if(academicYearData.IsFirstAcademicYear)
                         {
-                            can_start_new_year = true;
-                            academicYearData.DidLastYearEnd = false;
+                            float hours_since_campus_created = AcademicYearManager.CalculateHoursSinceCampusCreated(building);
+                            if (hours_since_campus_created >= 24f)
+                            {
+                                can_start_new_year = true;
+                                academicYearData.IsFirstAcademicYear = false;
+                                AcademicYearManager.SetAcademicYearData(building, academicYearData);
+                            }
                         }
                         else
                         {
-                            academicYearData.DidLastYearEnd = true;
+                            float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded(building);
+
+                            if (hours_since_last_year_ended >= 24f)
+                            {
+                                can_start_new_year = true;
+                                academicYearData.DidLastYearEnd = false;
+                            }
+                            else
+                            {
+                                academicYearData.DidLastYearEnd = true;
+                                academicYearData.IsFirstAcademicYear = false;
+                            }
+                            AcademicYearManager.SetAcademicYearData(building, academicYearData);
                         }
-                        AcademicYearManager.SetAcademicYearData(building, academicYearData);
                     }
                     else
                     {

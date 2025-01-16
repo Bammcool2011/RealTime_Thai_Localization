@@ -4,6 +4,7 @@ namespace RealTime.UI
 {
     using System;
     using ColossalFramework.UI;
+    using ICities;
     using RealTime.Config;
     using RealTime.Localization;
     using RealTime.Managers;
@@ -67,6 +68,21 @@ namespace RealTime.UI
             }
 
             var academicYearData = AcademicYearManager.GetAcademicYearData(mainGate);
+
+            if (academicYearData.IsFirstAcademicYear)
+            {
+                float hours_since_campus_created = AcademicYearManager.CalculateHoursSinceCampusCreated(mainGate);
+                if (hours_since_campus_created >= 23f)
+                {
+                    progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);
+                }
+                else
+                {
+                    string template = localizationProvider.Translate(TranslationKeys.AcademicYearHoursUntil);
+                    progressTooltipLabel.text = string.Format(template, Mathf.RoundToInt(24 - hours_since_campus_created));
+                }
+                return;
+            }
 
             if (academicYearData.DidLastYearEnd)
             {
