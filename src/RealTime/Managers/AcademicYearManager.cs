@@ -43,6 +43,21 @@ namespace RealTime.Managers
             MainCampusBuildingsList.Add(buildingID, academicYearData);
         }
 
+        public static void CreateAcademicYearDataExistingCampus(ushort buildingID)
+        {
+            var academicYearData = new AcademicYearData()
+            {
+                DidLastYearEnd = false,
+                DidGraduationStart = false,
+                GraduationStartTime = 0,
+                ActualAcademicYearEndFrame = 0,
+                MainCampusBuildingCreateFrame = 0,
+                IsFirstAcademicYear = false
+            };
+
+            MainCampusBuildingsList.Add(buildingID, academicYearData);
+        }
+
         public static void SetAcademicYearData(ushort buildingID, AcademicYearData academicYearData) => MainCampusBuildingsList[buildingID] = academicYearData;
 
         public static void DeleteAcademicYearData(ushort buildingID) => MainCampusBuildingsList.Remove(buildingID);

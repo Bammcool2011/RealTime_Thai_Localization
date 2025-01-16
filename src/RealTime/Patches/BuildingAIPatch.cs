@@ -1939,7 +1939,7 @@ namespace RealTime.Patches
 
                     if (data.Info.GetAI() is MainCampusBuildingAI && !AcademicYearManager.MainCampusBuildingExist(buildingID))
                     {
-                        AcademicYearManager.CreateAcademicYearData(buildingID);
+                        AcademicYearManager.CreateAcademicYearDataExistingCampus(buildingID);
                     }
                 }
             }
