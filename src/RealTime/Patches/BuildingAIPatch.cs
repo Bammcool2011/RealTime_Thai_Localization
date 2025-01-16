@@ -1900,6 +1900,11 @@ namespace RealTime.Patches
                     {
                         HotelManager.AddHotel(buildingID);
                     }
+
+                    if(data.Info.GetAI() is MainCampusBuildingAI && !AcademicYearManager.MainCampusBuildingExist(buildingID))
+                    {
+                        AcademicYearManager.CreateAcademicYearData(buildingID);
+                    }
                 }
             } 
         }
@@ -1931,6 +1936,11 @@ namespace RealTime.Patches
                     {
                         HotelManager.AddHotel(buildingID);
                     }
+
+                    if (data.Info.GetAI() is MainCampusBuildingAI && !AcademicYearManager.MainCampusBuildingExist(buildingID))
+                    {
+                        AcademicYearManager.CreateAcademicYearData(buildingID);
+                    }
                 }
             }
         }
@@ -1949,6 +1959,10 @@ namespace RealTime.Patches
                 if (BuildingManagerConnection.IsHotel(buildingID) && HotelManager.HotelExist(buildingID))
                 {
                     HotelManager.RemoveHotel(buildingID);
+                }
+                if (data.Info.GetAI() is MainCampusBuildingAI && AcademicYearManager.MainCampusBuildingExist(buildingID))
+                {
+                    AcademicYearManager.DeleteAcademicYearData(buildingID);
                 }
             }
         }

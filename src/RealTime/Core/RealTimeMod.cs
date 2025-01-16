@@ -111,6 +111,7 @@ namespace RealTime.Core
             base.OnCreated(loading);
             try
             {
+                AcademicYearManager.Init();
                 BuildingWorkTimeManager.Init();
                 FireBurnTimeManager.Init();
                 HotelManager.Init();
@@ -118,6 +119,7 @@ namespace RealTime.Core
             catch (Exception e)
             {
                 Debug.LogError(e.ToString());
+                AcademicYearManager.Deinit();
                 BuildingWorkTimeManager.Deinit();
                 FireBurnTimeManager.Deinit();
             }

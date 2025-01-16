@@ -49,17 +49,18 @@ namespace RealTime.Patches
                     // first year or not first year and 24 hours have passed since the last year ended
                     if (eventIndex != 0)
                     {
-                        float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded();
-
+                        float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded(building);
+                        var academicYearData = AcademicYearManager.GetAcademicYearData(building);
                         if (hours_since_last_year_ended >= 24f)
                         {
                             can_start_new_year = true;
-                            AcademicYearManager.AcademicYearData.DidLastYearEnd = false;
+                            academicYearData.DidLastYearEnd = false;
                         }
                         else
                         {
-                            AcademicYearManager.AcademicYearData.DidLastYearEnd = true;
+                            academicYearData.DidLastYearEnd = true;
                         }
+                        AcademicYearManager.SetAcademicYearData(building, academicYearData);
                     }
                     else
                     {

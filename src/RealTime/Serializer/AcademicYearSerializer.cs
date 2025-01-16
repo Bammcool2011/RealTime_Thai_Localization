@@ -19,15 +19,24 @@ namespace RealTime.Serializer
             // Write out metadata
             StorageData.WriteUInt16(iACADEMIC_YEAR_DATA_VERSION, Data);
 
-            StorageData.WriteUInt32(uiTUPLE_START, Data);
+            StorageData.WriteInt32(AcademicYearManager.MainCampusBuildingsList.Count, Data);
 
-            StorageData.WriteBool(AcademicYearManager.AcademicYearData.DidLastYearEnd, Data);
-            StorageData.WriteBool(AcademicYearManager.AcademicYearData.DidGraduationStart, Data);
-            StorageData.WriteFloat(AcademicYearManager.AcademicYearData.GraduationStartTime, Data);
-            StorageData.WriteUInt32(AcademicYearManager.AcademicYearData.ActualAcademicYearEndFrame, Data);
+            // Write out each buffer settings
+            foreach (var kvp in AcademicYearManager.MainCampusBuildingsList)
+            {
+                // Write start tuple
+                StorageData.WriteUInt32(uiTUPLE_START, Data);
 
-            StorageData.WriteUInt32(uiTUPLE_END, Data);
+                // Write actual settings
+                StorageData.WriteUInt16(kvp.Key, Data);
+                StorageData.WriteBool(kvp.Value.DidLastYearEnd, Data);
+                StorageData.WriteBool(kvp.Value.DidGraduationStart, Data);
+                StorageData.WriteFloat(kvp.Value.GraduationStartTime, Data);
+                StorageData.WriteUInt32(kvp.Value.ActualAcademicYearEndFrame, Data);
 
+                // Write end tuple
+                StorageData.WriteUInt32(uiTUPLE_END, Data);
+            }
         }
 
         public static void LoadData(int iGlobalVersion, byte[] Data, ref int iIndex)
@@ -37,14 +46,35 @@ namespace RealTime.Serializer
                 int iacademicYearVersion = StorageData.ReadUInt16(Data, ref iIndex);
                 Debug.Log("Global: " + iGlobalVersion + " BufferVersion: " + iacademicYearVersion + " DataLength: " + Data.Length + " Index: " + iIndex);
 
-                CheckStartTuple($"Buffer", iacademicYearVersion, Data, ref iIndex);
+                if (AcademicYearManager.MainCampusBuildingsList.Count > 0)
+                {
+                    AcademicYearManager.MainCampusBuildingsList.Clear();
+                }
 
-                AcademicYearManager.AcademicYearData.DidLastYearEnd = StorageData.ReadBool(Data, ref iIndex);
-                AcademicYearManager.AcademicYearData.DidGraduationStart = StorageData.ReadBool(Data, ref iIndex);
-                AcademicYearManager.AcademicYearData.GraduationStartTime = StorageData.ReadFloat(Data, ref iIndex);
-                AcademicYearManager.AcademicYearData.ActualAcademicYearEndFrame = StorageData.ReadUInt32(Data, ref iIndex);
+                int MainCampusBuildingsList_Count = StorageData.ReadInt32(Data, ref iIndex);
+                for (int i = 0; i < MainCampusBuildingsList_Count; i++)
+                {
+                    CheckStartTuple($"Buffer({i})", iacademicYearVersion, Data, ref iIndex);
 
-                CheckEndTuple($"Buffer", iacademicYearVersion, Data, ref iIndex);
+                    ushort BuildingId = StorageData.ReadUInt16(Data, ref iIndex);
+
+                    bool DidLastYearEnd = StorageData.ReadBool(Data, ref iIndex);
+                    bool DidGraduationStart = StorageData.ReadBool(Data, ref iIndex);
+                    float GraduationStartTime = StorageData.ReadFloat(Data, ref iIndex);
+                    uint ActualAcademicYearEndFrame = StorageData.ReadUInt32(Data, ref iIndex);
+
+                    var academicYearData = new AcademicYearManager.AcademicYearData()
+                    {
+                        DidLastYearEnd = DidLastYearEnd,
+                        DidGraduationStart = DidGraduationStart,
+                        GraduationStartTime = GraduationStartTime,
+                        ActualAcademicYearEndFrame = ActualAcademicYearEndFrame
+                    };
+
+                    AcademicYearManager.MainCampusBuildingsList.Add(BuildingId, academicYearData);
+
+                    CheckEndTuple($"Buffer({i})", iacademicYearVersion, Data, ref iIndex);
+                }
             }
         }
 

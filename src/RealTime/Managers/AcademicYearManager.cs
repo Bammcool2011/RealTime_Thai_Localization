@@ -2,21 +2,54 @@
 
 namespace RealTime.Managers
 {
+    using System.Collections.Generic;
     using RealTime.GameConnection;
     using SkyTools.Tools;
 
     internal static class AcademicYearManager
     {
+        public static Dictionary<ushort, AcademicYearData> MainCampusBuildingsList;
+
         public struct AcademicYearData
         {
-            public static bool DidLastYearEnd;
-            public static bool DidGraduationStart;
-            public static float GraduationStartTime;
-            public static uint ActualAcademicYearEndFrame;
+            public bool DidLastYearEnd;
+            public bool DidGraduationStart;
+            public float GraduationStartTime;
+            public uint ActualAcademicYearEndFrame;
         }
 
+        public static void Init() => MainCampusBuildingsList = [];
+
+        public static void Deinit() => MainCampusBuildingsList = [];
+
+        public static bool MainCampusBuildingExist(ushort buildingID) => MainCampusBuildingsList.ContainsKey(buildingID);
+
+        public static AcademicYearData GetAcademicYearData(ushort buildingID) => MainCampusBuildingsList[buildingID];
+
+        public static void CreateAcademicYearData(ushort buildingID)
+        {
+            var academicYearData = new AcademicYearData()
+            {
+                DidLastYearEnd = false,
+                DidGraduationStart = false,
+                GraduationStartTime = 0,
+                ActualAcademicYearEndFrame = 0
+            };
+            
+            MainCampusBuildingsList.Add(buildingID, academicYearData);
+        }
+
+        public static void SetAcademicYearData(ushort buildingID, AcademicYearData academicYearData) => MainCampusBuildingsList[buildingID] = academicYearData;
+
+        public static void DeleteAcademicYearData(ushort buildingID) => MainCampusBuildingsList.Remove(buildingID);
+
         // calculate hours since last year ended
-        public static float CalculateHoursSinceLastYearEnded() => (SimulationManager.instance.m_currentFrameIndex - AcademicYearData.ActualAcademicYearEndFrame) * SimulationManager.DAYTIME_FRAME_TO_HOUR;
+        public static float CalculateHoursSinceLastYearEnded(ushort buildingID)
+        {
+            var academicYearData = GetAcademicYearData(buildingID);
+
+            return (SimulationManager.instance.m_currentFrameIndex - academicYearData.ActualAcademicYearEndFrame) * SimulationManager.DAYTIME_FRAME_TO_HOUR;
+        }
 
         // dont start or end academic year if night time or weekend or the hour is not between 9 am and 10 am
         public static bool CanAcademicYearEndorBegin(TimeInfo TimeInfo)

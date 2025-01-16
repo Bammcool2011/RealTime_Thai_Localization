@@ -66,9 +66,11 @@ namespace RealTime.UI
                 return;
             }
 
-            if (AcademicYearManager.AcademicYearData.DidLastYearEnd)
+            var academicYearData = AcademicYearManager.GetAcademicYearData(mainGate);
+
+            if (academicYearData.DidLastYearEnd)
             {
-                float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded();
+                float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded(mainGate);
                 if (hours_since_last_year_ended >= 23f)
                 {
                     progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);

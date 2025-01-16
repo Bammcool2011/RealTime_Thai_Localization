@@ -13,6 +13,7 @@ namespace RealTime.Patches
     using SkyTools.Tools;
     using RealTime.Config;
     using RealTime.Managers;
+    using ICities;
 
     /// <summary>
     /// A static class that provides the patch objects for the Park Life DLC related methods.
@@ -144,8 +145,10 @@ namespace RealTime.Patches
                         }
                     }
 
-                    Log.Debug(LogCategory.Events, TimeInfo.Now, $"DidLastYearEnd: {AcademicYearManager.AcademicYearData.DidLastYearEnd}, graduation: {(campus.m_flags & DistrictPark.Flags.Graduation) != 0}, DidGraduationStart: {AcademicYearManager.AcademicYearData.DidGraduationStart}, currentHour: {TimeInfo.CurrentHour}, GraduationStartTime: {AcademicYearManager.AcademicYearData.GraduationStartTime}");
-                    if (AcademicYearManager.AcademicYearData.DidLastYearEnd && (campus.m_flags & DistrictPark.Flags.Graduation) == 0 && !AcademicYearManager.AcademicYearData.DidGraduationStart)
+                    var academicYearData = AcademicYearManager.GetAcademicYearData(campus.m_mainGate);
+
+                    Log.Debug(LogCategory.Events, TimeInfo.Now, $"DidLastYearEnd: {academicYearData.DidLastYearEnd}, graduation: {(campus.m_flags & DistrictPark.Flags.Graduation) != 0}, DidGraduationStart: {academicYearData.DidGraduationStart}, currentHour: {TimeInfo.CurrentHour}, GraduationStartTime: {academicYearData.GraduationStartTime}");
+                    if (academicYearData.DidLastYearEnd && (campus.m_flags & DistrictPark.Flags.Graduation) == 0 && !academicYearData.DidGraduationStart)
                     {
                         bool shouldStartGraduation = true;
                         if (TimeInfo.IsNightTime || TimeInfo.Now.IsWeekend())
@@ -159,23 +162,26 @@ namespace RealTime.Patches
                         if(shouldStartGraduation)
                         {
                             campus.m_flags |= DistrictPark.Flags.Graduation;
-                            AcademicYearManager.AcademicYearData.GraduationStartTime = TimeInfo.CurrentHour;
-                            AcademicYearManager.AcademicYearData.DidGraduationStart = true;
-                            Log.Debug(LogCategory.Events, TimeInfo.Now, $"GraduationStartTime: {AcademicYearManager.AcademicYearData.GraduationStartTime}, DidGraduationStart: {AcademicYearManager.AcademicYearData.DidGraduationStart}");
+                            academicYearData.GraduationStartTime = TimeInfo.CurrentHour;
+                            academicYearData.DidGraduationStart = true;
+                            AcademicYearManager.SetAcademicYearData(campus.m_mainGate, academicYearData);
+                            Log.Debug(LogCategory.Events, TimeInfo.Now, $"GraduationStartTime: {academicYearData.GraduationStartTime}, DidGraduationStart: {academicYearData.DidGraduationStart}");
                         }
                     }
-                    if (AcademicYearManager.AcademicYearData.DidLastYearEnd && (campus.m_flags & DistrictPark.Flags.Graduation) != 0
-                        && AcademicYearManager.AcademicYearData.DidGraduationStart && TimeInfo.CurrentHour - AcademicYearManager.AcademicYearData.GraduationStartTime > 3f)
+                    if (academicYearData.DidLastYearEnd && (campus.m_flags & DistrictPark.Flags.Graduation) != 0
+                        && academicYearData.DidGraduationStart && TimeInfo.CurrentHour - academicYearData.GraduationStartTime > 3f)
                     {
-                        AcademicYearManager.AcademicYearData.GraduationStartTime = 0;
+                        academicYearData.GraduationStartTime = 0;
+                        AcademicYearManager.SetAcademicYearData(campus.m_mainGate, academicYearData);
                         campus.m_flags &= ~DistrictPark.Flags.Graduation;
-                        Log.Debug(LogCategory.Events, TimeInfo.Now, $"GraduationStartTime: {AcademicYearManager.AcademicYearData.GraduationStartTime}, DidGraduationStart: {AcademicYearManager.AcademicYearData.DidGraduationStart}");
+                        Log.Debug(LogCategory.Events, TimeInfo.Now, $"GraduationStartTime: {academicYearData.GraduationStartTime}, DidGraduationStart: {academicYearData.DidGraduationStart}");
                     }
 
-                    if (!AcademicYearManager.AcademicYearData.DidLastYearEnd && AcademicYearManager.AcademicYearData.DidGraduationStart)
+                    if (!academicYearData.DidLastYearEnd && academicYearData.DidGraduationStart)
                     {
-                        AcademicYearManager.AcademicYearData.DidGraduationStart = false;
-                        Log.Debug(LogCategory.Events, TimeInfo.Now, $"DidGraduationStart: {AcademicYearManager.AcademicYearData.DidGraduationStart}");
+                        academicYearData.DidGraduationStart = false;
+                        AcademicYearManager.SetAcademicYearData(campus.m_mainGate, academicYearData);
+                        Log.Debug(LogCategory.Events, TimeInfo.Now, $"DidGraduationStart: {academicYearData.DidGraduationStart}");
                     }
                 }
                 if (campus.m_coachCount != 0)

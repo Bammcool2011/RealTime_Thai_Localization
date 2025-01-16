@@ -23,7 +23,9 @@ namespace RealTime.Patches
         [HarmonyPrefix]
         public static bool GetYearProgress(ref EventData data, ref float __result)
         {
-            if (AcademicYearManager.AcademicYearData.DidLastYearEnd)
+            var academicYearData = AcademicYearManager.GetAcademicYearData(data.m_building);
+
+            if (academicYearData.DidLastYearEnd)
             {
                 __result = 100f;
                 return false;
@@ -43,7 +45,9 @@ namespace RealTime.Patches
             {
                 return false;
             }
-            AcademicYearManager.AcademicYearData.ActualAcademicYearEndFrame = SimulationManager.instance.m_currentFrameIndex;
+            var academicYearData = AcademicYearManager.GetAcademicYearData(data.m_building);
+            academicYearData.ActualAcademicYearEndFrame = SimulationManager.instance.m_currentFrameIndex;
+            AcademicYearManager.SetAcademicYearData(data.m_building, academicYearData);
             return true;
         }
 

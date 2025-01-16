@@ -20,6 +20,7 @@ namespace RealTime.Patches
     using System.Reflection;
     using System.Collections.Generic;
     using RealTime.Managers;
+    using ICities;
 
     /// <summary>
     /// A static class that provides the patch objects for the world info panel game methods.
@@ -428,9 +429,13 @@ namespace RealTime.Patches
 
                 // Is this a main campus building and the academic year can end and the year has not already ended
                 if (buildingInfo.GetAI() is MainCampusBuildingAI && AcademicYearManager.CanAcademicYearEndorBegin(TimeInfo)
-                    && AcademicYearManager.AcademicYearData.DidLastYearEnd)
+                    && AcademicYearManager.MainCampusBuildingExist(building))
                 {
-                    m_endYearButton.Enable();
+                    var academicYearData = AcademicYearManager.GetAcademicYearData(building);
+                    if(academicYearData.DidLastYearEnd)
+                    {
+                        m_endYearButton.Enable();
+                    }
                 }
                 else
                 {
@@ -498,7 +503,9 @@ namespace RealTime.Patches
 
                 if(eventData.Info.GetAI() is AcademicYearAI)
                 {
-                    AcademicYearManager.AcademicYearData.ActualAcademicYearEndFrame = SimulationManager.instance.m_currentFrameIndex;
+                    var academicYearData = AcademicYearManager.GetAcademicYearData(buildingID);
+                    academicYearData.ActualAcademicYearEndFrame = SimulationManager.instance.m_currentFrameIndex;
+                    AcademicYearManager.SetAcademicYearData(buildingID, academicYearData);
                     eventData.m_flags = (eventData.m_flags & ~EventData.Flags.Active) | EventData.Flags.Completed | EventData.Flags.Disorganizing;
                     Singleton<EventManager>.instance.m_globalEventDataDirty = true;
                     byte park = Singleton<DistrictManager>.instance.GetPark(Singleton<BuildingManager>.instance.m_buildings.m_buffer[eventData.m_building].m_position);

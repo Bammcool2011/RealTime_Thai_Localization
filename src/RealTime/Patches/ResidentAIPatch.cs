@@ -15,6 +15,7 @@ namespace RealTime.Patches
     using System.Reflection.Emit;
     using UnityEngine;
     using RealTime.Managers;
+    using static RenderManager;
 
     /// <summary>
     /// A static class that provides the patch objects and the game connection objects for the resident AI .
@@ -173,8 +174,18 @@ namespace RealTime.Patches
                 {
                     return true;
                 }
-                bool IsUniversity = building.Info && (building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI || building.Info.GetAI() is SchoolAI && building.Info.m_class.m_level == ItemClass.Level.Level3);
-                return !IsUniversity || AcademicYearManager.AcademicYearData.DidLastYearEnd;
+                bool IsCampusUniversity = building.Info && (building.Info.GetAI() is CampusBuildingAI || building.Info.GetAI() is UniqueFacultyAI);
+                if (!IsCampusUniversity)
+                {
+                    return true;
+                }
+
+                byte park = Singleton<DistrictManager>.instance.GetPark(building.m_position);
+                var campus = Singleton<DistrictManager>.instance.m_parks.m_buffer[park];
+
+                var academicYearData = AcademicYearManager.GetAcademicYearData(campus.m_mainGate);
+
+                return academicYearData.DidLastYearEnd;
             }
         }
 
