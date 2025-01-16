@@ -34,21 +34,21 @@ namespace RealTime.Patches
                 if (__instance.m_events.m_size < 256)
                 {
                     eventIndex = (ushort)__instance.m_events.m_size;
-                    if(!RealTimeBuildingAI.IsBuildingWorking(building))
-                    {
-                        __result = false;
-                        return false;
-                    }
-                    if (!AcademicYearManager.CanAcademicYearEndorBegin(TimeInfo))
-                    {
-                        __result = false;
-                        return false;
-                    }
 
                     bool can_start_new_year = false;
                     // first year or not first year and 24 hours have passed since the last year ended
                     if (eventIndex != 0)
                     {
+                        if (!RealTimeBuildingAI.IsBuildingWorking(building))
+                        {
+                            __result = false;
+                            return false;
+                        }
+                        if (!AcademicYearManager.CanAcademicYearEndorBegin(TimeInfo))
+                        {
+                            __result = false;
+                            return false;
+                        }
                         float hours_since_last_year_ended = AcademicYearManager.CalculateHoursSinceLastYearEnded(building);
                         var academicYearData = AcademicYearManager.GetAcademicYearData(building);
                         if (hours_since_last_year_ended >= 24f)
