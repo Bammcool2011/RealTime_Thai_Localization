@@ -205,23 +205,23 @@
   <translation id="ScheduledAction" value="现在" />
   <translation id="CurrentState" value="状态" />
   <translation id="NextScheduledAction" value="直到" />
-  <translation id="ScheduledAction.AtHome" value="回家" />
+  <translation id="ScheduledAction.GoHome" value="回家" />
   <translation id="CurrentState.AtHome" value="在家" />
-  <translation id="ScheduledAction.AtSchool" value="去学校" />
+  <translation id="ScheduledAction.GoToSchool" value="去学校" />
   <translation id="CurrentState.AtSchool" value="在学校" />
-  <translation id="ScheduledAction.AtWork" value="去工作" />
+  <translation id="ScheduledAction.GoToWork" value="去工作" />
   <translation id="CurrentState.AtWork" value="工作" />
-  <translation id="ScheduledAction.Shopping" value="去购物" />
+  <translation id="ScheduledAction.GoShopping" value="去购物" />
   <translation id="CurrentState.Shopping" value="购物" />
-  <translation id="ScheduledAction.Relaxing" value="去放松" />
+  <translation id="ScheduledAction.GoToRelaxg" value="去放松" />
   <translation id="CurrentState.Relaxing" value="放松" />
-  <translation id="ScheduledAction.Visiting" value="去参观" />
+  <translation id="ScheduledAction.GoToVisit" value="去参观" />
   <translation id="CurrentState.Visiting" value="参观" />
-  <translation id="ScheduledAction.InShelter" value="去避难所" />
+  <translation id="ScheduledAction.GoToShelter" value="去避难所" />
   <translation id="CurrentState.InShelter" value="在避难所" />
   <translation id="ScheduledAction.GoToBreakfast" value="去吃早餐" />
   <translation id="CurrentState.Breakfast" value="吃早餐" />
-  <translation id="ScheduledAction.Lunch" value="去吃午餐" />
+  <translation id="ScheduledAction.GoToLunch" value="去吃午餐" />
   <translation id="CurrentState.Lunch" value="吃午餐" />
   <translation id="WorkShift.First" value="早班" />
   <translation id="WorkShift.Second" value="午班" />
@@ -234,7 +234,7 @@
   <translation id="AcademicYear.DaysLeft" value="{0} 天后结束" />
   <translation id="AcademicYear.HoursLeft" value="{0} 小时后结束" />
   <translation id="AcademicYear.EndsSoon" value="一小时内结束" />
-  <translation id="AcademicYear.StartDelay" value="Not starting because of night time or weekend" />
+  <translation id="AcademicYear.StartDelay" value="因为夜晚或周末而尚未开始" />
   <translation id="AcademicYear.EndDelay" value="不因夜间或周末而结束" />
   <translation id="AcademicYear.HoursUntil" value="{0} 小时内开始" />
   <translation id="AcademicYear.StartsSoon" value="1 小时内开始" />
@@ -252,6 +252,8 @@
   <translation id="HasExtendedWorkShiftTooltip" value="早班将在城市醒来时或最早的居民醒来时开始，以两者中较早的为准。不能有连续班次。" />
   <translation id="HasContinuousWorkShift" value="有连续班次" />
   <translation id="HasContinuousWorkShiftTooltip" value="建筑物将从上午8点工作到晚上8点，如果夜间工作，将有两个班次：8-20和20-8。不能有延长班次。" />
+  <translation id="IgnorePolicy" value="忽略区域政策" />
+  <translation id="IgnorePolicyTooltip" value="该建筑将忽略区域政策中的限制" />
   <translation id="ShiftCountTitle" value="选择班次数量" />
   <translation id="ShiftCountTooltip" value="夜间工作且非连续 = 3，连续 = 1，夜间工作且连续 = 2，其他情况 = 1-2" />
   <translation id="SaveBuildingSettings" value="保存建筑设置" />
