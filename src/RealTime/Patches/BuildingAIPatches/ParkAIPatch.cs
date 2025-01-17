@@ -18,7 +18,6 @@ namespace RealTime.Patches
         private delegate void CommonBuildingAIHandleDeadDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, int citizenCount);
         private static readonly CommonBuildingAIHandleDeadDelegate HandleDead = AccessTools.MethodDelegate<CommonBuildingAIHandleDeadDelegate>(typeof(CommonBuildingAI).GetMethod("HandleDead", BindingFlags.Instance | BindingFlags.NonPublic), null, false);
 
-
         [HarmonyPatch(typeof(ParkAI), "ProduceGoods")]
         [HarmonyPrefix]
         public static bool ProduceGoods(ParkAI __instance, ushort buildingID, ref Building buildingData, ref Building.Frame frameData, int productionRate, int finalProductionRate, ref Citizen.BehaviourData behaviour, int aliveWorkerCount, int totalWorkerCount, int workPlaceCount, int aliveVisitorCount, int totalVisitorCount, int visitPlaceCount)
@@ -56,6 +55,32 @@ namespace RealTime.Patches
                         offer2.Amount = 1;
                         Singleton<TransferManager>.instance.AddIncomingOffer(TransferManager.TransferReason.ParkMaintenance, offer2);
                     }
+                }
+                return false;
+            }
+            return true;
+        }
+
+        [HarmonyPatch(typeof(ParkAI), "GetColor")]
+        [HarmonyPrefix]
+        public static bool GetColor(ParkAI __instance, ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode, ref Color __result)
+        {
+            if (infoMode == InfoManager.InfoMode.Entertainment)
+            {
+                if (subInfoMode == InfoManager.SubInfoMode.WaterPower)
+                {
+                    if (data.m_productionRate > 0)
+                    {
+                        __result = Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
+                    }
+                    else
+                    {
+                        __result = Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
+                    }
+                }
+                else
+                {
+                    __result = Singleton<InfoManager>.instance.m_properties.m_neutralColor;
                 }
                 return false;
             }

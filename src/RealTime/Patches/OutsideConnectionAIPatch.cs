@@ -17,44 +17,37 @@ namespace RealTime.Patches
 
         public static Compatibility Compatibility { get; set; }
 
-        [HarmonyPatch]
-        private sealed class OutsideConnectionAI_DummyTrafficProbability
+        public static bool IsInAddConnectionOffers { get; private set; } = false;
+
+        [HarmonyPatch(typeof(OutsideConnectionAI), "DummyTrafficProbability")]
+        [HarmonyPostfix]
+        private static void DummyTrafficProbabilityPostfix(ref int __result)
         {
-            [HarmonyPatch(typeof(OutsideConnectionAI), "DummyTrafficProbability")]
-            [HarmonyPostfix]
-            private static void Postfix(ref int __result)
+            if (SpareTimeBehavior != null)
             {
-                if(SpareTimeBehavior != null)
-                {
-                    __result = SpareTimeBehavior.SetDummyTrafficProbability(__result);
-                }
+                __result = SpareTimeBehavior.SetDummyTrafficProbability(__result);
             }
         }
 
-        [HarmonyPatch]
-        private sealed class OutsideConnectionAI_111
+        [HarmonyPatch(typeof(OutsideConnectionAI), "AddConnectionOffers")]
+        [HarmonyPrefix]
+        public static bool AddConnectionOffersPrefix(ushort buildingID, ref int cargoCapacity, ref int residentCapacity, ref int touristFactor0, ref int touristFactor1, ref int touristFactor2, ref int dummyTrafficFactor)
         {
-            public static bool IsInAddConnectionOffers { get; private set; } = false;
+            IsInAddConnectionOffers = true;
 
-            [HarmonyPatch(typeof(OutsideConnectionAI), "AddConnectionOffers")]
-            [HarmonyPrefix]
-            public static bool AddConnectionOffersPrefix(ushort buildingID, ref int cargoCapacity, ref int residentCapacity, ref int touristFactor0, ref int touristFactor1, ref int touristFactor2, ref int dummyTrafficFactor)
+            if (!Compatibility.IsAnyModActive(WorkshopMods.AdvancedOutsideConnections))
             {
-                IsInAddConnectionOffers = true;
-
-                if (!Compatibility.IsAnyModActive(WorkshopMods.AdvancedOutsideConnections))
-                {
-                    touristFactor0 = 325;
-                    touristFactor1 = 125;
-                    touristFactor2 = 50;
-                }
-
-                return true;
+                touristFactor0 = 325;
+                touristFactor1 = 125;
+                touristFactor2 = 50;
             }
 
-            [HarmonyPatch(typeof(OutsideConnectionAI), "AddConnectionOffers")]
-            [HarmonyPostfix]
-            public static void AddConnectionOffersPostfix(ushort buildingID, ref int cargoCapacity, ref int residentCapacity, ref int touristFactor0, ref int touristFactor1, ref int touristFactor2, ref int dummyTrafficFactor) => IsInAddConnectionOffers = false;
+            return true;
         }
+
+        [HarmonyPatch(typeof(OutsideConnectionAI), "AddConnectionOffers")]
+        [HarmonyPostfix]
+        public static void AddConnectionOffersPostfix(ushort buildingID, ref int cargoCapacity, ref int residentCapacity, ref int touristFactor0, ref int touristFactor1, ref int touristFactor2, ref int dummyTrafficFactor) => IsInAddConnectionOffers = false;
+
     }
 }

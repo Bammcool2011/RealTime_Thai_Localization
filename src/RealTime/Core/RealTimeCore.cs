@@ -10,6 +10,7 @@ namespace RealTime.Core
     using RealTime.Events.Storage;
     using RealTime.GameConnection;
     using RealTime.Patches;
+    using RealTime.Patches.BuildingAIPatches;
     using RealTime.Serializer;
     using RealTime.Simulation;
     using RealTime.UI;
@@ -213,8 +214,18 @@ namespace RealTime.Core
             AcademicYearAIPatch.RealTimeBuildingAI = null;
             AcademicYearAIPatch.TimeInfo = null;
             BuildingAIPatch.RealTimeBuildingAI = null;
-            BuildingAIPatch.RealTimeResidentAI = null;
             BuildingAIPatch.WeatherInfo = null;
+            BuildingManagerPatch.RealTimeBuildingAI = null;
+            CommercialBuildingAIPatch.RealTimeBuildingAI = null;
+            CommonBuildingAIPatch.RealTimeBuildingAI = null;
+            IndustrialBuildingAIPatch.RealTimeBuildingAI = null;
+            IndustrialExtractorAIPatch.RealTimeBuildingAI = null;
+            LibraryAIPatch.RealTimeBuildingAI = null;
+            MarketAIPatch.RealTimeBuildingAI = null;
+            OfficeBuildingAIPatch.RealTimeBuildingAI = null;
+            PlayerBuildingAIPatch.RealTimeBuildingAI = null;
+            PrivateBuildingAIPatch.RealTimeBuildingAI = null;
+            SchoolAIPatch.RealTimeBuildingAI = null;
             CitizenManagerPatch.NewCitizenBehavior = null;
             DistrictParkPatch.RealTimeBuildingAI = null;
             DistrictParkPatch.RealTimeConfig = null;
@@ -395,8 +406,19 @@ namespace RealTime.Core
             AcademicYearAIPatch.TimeInfo = timeInfo;
 
             BuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
-            BuildingAIPatch.RealTimeResidentAI = realTimeResidentAI;
             BuildingAIPatch.WeatherInfo = gameConnections.WeatherInfo;
+
+            BuildingManagerPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            CommercialBuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            CommonBuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            IndustrialBuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            IndustrialExtractorAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            LibraryAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            MarketAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            OfficeBuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            PlayerBuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            PrivateBuildingAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
+            SchoolAIPatch.RealTimeBuildingAI = realTimeBuildingAI;
 
             DistrictParkPatch.RealTimeBuildingAI = realTimeBuildingAI;
             DistrictParkPatch.RealTimeConfig = config;

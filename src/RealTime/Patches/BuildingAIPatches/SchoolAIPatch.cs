@@ -1,14 +1,18 @@
-namespace RealTime.Patches
+namespace RealTime.Patches.BuildingAIPatches
 {
     using System;
     using System.Reflection;
     using ColossalFramework;
     using HarmonyLib;
+    using RealTime.CustomAI;
     using UnityEngine;
 
     [HarmonyPatch]
-    public static class SchoolAIPatch
+    internal static class SchoolAIPatch
     {
+        /// <summary>Gets or sets the custom AI object for buildings.</summary>
+        public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
+
         private delegate void PlayerBuildingAICreateBuildingDelegate(PlayerBuildingAI __instance, ushort buildingID, ref Building data);
         private static readonly PlayerBuildingAICreateBuildingDelegate BaseCreateBuilding = AccessTools.MethodDelegate<PlayerBuildingAICreateBuildingDelegate>(typeof(PlayerBuildingAI).GetMethod("CreateBuilding", BindingFlags.Instance | BindingFlags.Public), null, false);
 
@@ -65,7 +69,6 @@ namespace RealTime.Patches
             }
             return true;
         }
-
 
         [HarmonyPatch(typeof(SchoolAI), "ProduceGoods")]
         [HarmonyPrefix]
@@ -176,6 +179,64 @@ namespace RealTime.Patches
             return true;
         }
 
+        [HarmonyPatch(typeof(SchoolAI), "GetCurrentRange")]
+        [HarmonyPrefix]
+        private static bool GetCurrentRange(SchoolAI __instance, ushort buildingID, ref Building data, ref float __result)
+        {
+            if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
+            {
+                int num = data.m_productionRate;
+                if ((data.m_flags & Building.Flags.Evacuating) != 0)
+                {
+                    num = 0;
+                }
+                else if ((data.m_flags & Building.Flags.RateReduced) != 0)
+                {
+                    num = Mathf.Min(num, 50);
+                }
+                int budget = Singleton<EconomyManager>.instance.GetBudget(__instance.m_info.m_class);
+                num = PlayerBuildingAI.GetProductionRate(num, budget);
+                __result = num * __instance.m_educationRadius * 0.01f;
+                return false;
+            }
+            return true;
+        }
+
+        [HarmonyPatch(typeof(SchoolAI), "GetColor")]
+        [HarmonyPrefix]
+        public static bool GetColor(SchoolAI __instance, ushort buildingID, ref Building data, InfoManager.InfoMode infoMode, InfoManager.SubInfoMode subInfoMode, ref Color __result)
+        {
+            if (infoMode == InfoManager.InfoMode.Education)
+            {
+                var level = ItemClass.Level.None;
+                switch (subInfoMode)
+                {
+                    case InfoManager.SubInfoMode.Default:
+                        level = ItemClass.Level.Level1;
+                        break;
+                    case InfoManager.SubInfoMode.WaterPower:
+                        level = ItemClass.Level.Level2;
+                        break;
+                    case InfoManager.SubInfoMode.WindPower:
+                        level = ItemClass.Level.Level3;
+                        break;
+                }
+                if (level == __instance.m_info.m_class.m_level && __instance.m_info.m_class.m_service == ItemClass.Service.Education)
+                {
+                    if (data.m_productionRate > 0)
+                    {
+                        __result = Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_activeColor;
+                    }
+                    else
+                    {
+                        __result = Singleton<InfoManager>.instance.m_properties.m_modeProperties[(int)infoMode].m_inactiveColor;
+                    }
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private static void GetVisitBehaviour(ushort buildingID, ref Building buildingData, ref Citizen.BehaviourData behaviour, ref int aliveCount, ref int totalCount)
         {
             var instance = Singleton<CitizenManager>.instance;
@@ -195,7 +256,6 @@ namespace RealTime.Patches
                 }
             }
         }
-
 
         private static void EnsureCitizenUnits(ushort buildingID, ref Building data, int homeCount = 0, int workCount = 0, int visitCount = 0, int studentCount = 0, int hotelCount = 0)
         {
@@ -261,5 +321,6 @@ namespace RealTime.Patches
                 }
             }
         }
+
     }
 }

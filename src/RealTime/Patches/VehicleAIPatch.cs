@@ -2,7 +2,6 @@
 
 namespace RealTime.Patches
 {
-    using System;
     using ColossalFramework;
     using HarmonyLib;
     using RealTime.CustomAI;
@@ -15,12 +14,11 @@ namespace RealTime.Patches
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
 
         [HarmonyPatch]
-        private sealed class FireTruckAI_ExtinguishFire
+        private sealed class FireTruckAIPatch
         {
-
             [HarmonyPatch(typeof(FireTruckAI), "ExtinguishFire")]
             [HarmonyPrefix]
-            private static bool Prefix(FireTruckAI __instance, ushort vehicleID, ref Vehicle data, ushort buildingID, ref Building buildingData, ref bool __result)
+            private static bool ExtinguishFirePrefix(FireTruckAI __instance, ushort vehicleID, ref Vehicle data, ushort buildingID, ref Building buildingData, ref bool __result)
             {
                 if (RealTimeBuildingAI == null)
                 {
@@ -41,7 +39,7 @@ namespace RealTime.Patches
 
             [HarmonyPatch(typeof(FireTruckAI), "SetTarget")]
             [HarmonyPrefix]
-            private static void SetTarget(ushort vehicleID, ref Vehicle data, ushort targetBuilding)
+            private static void SetTargetPrefix(ushort vehicleID, ref Vehicle data, ushort targetBuilding)
             {
                 if (targetBuilding == 0 && RealTimeBuildingAI != null)
                 {
@@ -59,13 +57,13 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch]
-        private sealed class FireCopterAI_ExtinguishFire
+        private sealed class FireCopterAIPatch
         {
             [HarmonyPatch(typeof(FireCopterAI), "ExtinguishFire",
-                new Type[] { typeof(ushort), typeof(Vehicle), typeof(ushort), typeof(Building) },
-                new ArgumentType[] { ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Ref })]
+                [typeof(ushort), typeof(Vehicle), typeof(ushort), typeof(Building)],
+                [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal, ArgumentType.Ref])]
             [HarmonyPrefix]
-            private static bool Prefix(FireCopterAI __instance, ushort vehicleID, ref Vehicle data, ushort buildingID, ref Building buildingData, ref bool __result)
+            private static bool ExtinguishFirePrefix(FireCopterAI __instance, ushort vehicleID, ref Vehicle data, ushort buildingID, ref Building buildingData, ref bool __result)
             {
                 byte fireIntensity = buildingData.m_fireIntensity;
                 if (fireIntensity > 0 && RealTimeBuildingAI != null)
@@ -91,7 +89,7 @@ namespace RealTime.Patches
 
             [HarmonyPatch(typeof(FireCopterAI), "SetTarget")]
             [HarmonyPrefix]
-            private static void SetTarget(ushort vehicleID, ref Vehicle data, ushort targetBuilding)
+            private static void SetTargetPrefix(ushort vehicleID, ref Vehicle data, ushort targetBuilding)
             {
                 if (targetBuilding == 0 && RealTimeBuildingAI != null)
                 {

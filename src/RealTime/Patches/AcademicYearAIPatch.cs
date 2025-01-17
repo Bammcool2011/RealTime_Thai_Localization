@@ -109,6 +109,5 @@ namespace RealTime.Patches
             return false;
         }
 
-        
     }
 }

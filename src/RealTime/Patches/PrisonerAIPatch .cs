@@ -8,7 +8,6 @@ namespace RealTime.Patches
     [HarmonyPatch(typeof(PrisonerAI))]
     public static class PrisonerAIPatch
     {
-
         [HarmonyPatch(typeof(PrisonerAI), "GetLocalizedStatus",
             [typeof(ushort), typeof(CitizenInstance), typeof(InstanceID)],
             [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Out])]

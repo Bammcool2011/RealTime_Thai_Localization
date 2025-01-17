@@ -17,6 +17,45 @@ namespace RealTime.Patches
         /// Gets or sets the implementation of the <see cref="INewCitizenBehavior"/> interface.
         /// </summary>
         public static INewCitizenBehavior NewCitizenBehavior { get; set; }
+  
+        [HarmonyPatch(typeof(CitizenManager), "CreateCitizen",
+                [typeof(uint), typeof(int), typeof(int), typeof(Randomizer)],
+                [ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref]
+            )]
+        [HarmonyPostfix]
+        private static void Postfix1(ref uint citizen, bool __result)
+        {
+            if (!RealTimeCore.ApplyCitizenPatch)
+            {
+                return;
+            }
+
+            if (__result && NewCitizenBehavior != null)
+            {
+                // This method is called by the game in two cases only: a new child is born or a citizen joins the city.
+                // So we tailor the age here.
+                UpdateCitizenAge(citizen);
+                UpdateCitizenEducation(citizen);
+            }
+        }
+
+        [HarmonyPatch(typeof(CitizenManager), "CreateCitizen",
+                [typeof(uint), typeof(int), typeof(int), typeof(Randomizer), typeof(Citizen.Gender)],
+                [ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal]
+            )]
+        [HarmonyPostfix]
+        private static void Postfix2(ref uint citizen, bool __result)
+        {
+            if (!RealTimeCore.ApplyCitizenPatch)
+            {
+                return;
+            }
+
+            if (__result && NewCitizenBehavior != null)
+            {
+                UpdateCitizenEducation(citizen);
+            }
+        }
 
         private static void UpdateCitizenAge(uint citizenId)
         {
@@ -33,51 +72,5 @@ namespace RealTime.Patches
             citizen.Education1 = newEducation != Citizen.Education.Uneducated;
         }
 
-        [HarmonyPatch]
-        private sealed class CitizenManager_CreateCitizen1
-        {
-            [HarmonyPatch(typeof(CitizenManager), "CreateCitizen",
-                [typeof(uint), typeof(int), typeof(int), typeof(Randomizer)],
-                [ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref]
-            )]
-            [HarmonyPostfix]
-            private static void Postfix(ref uint citizen, bool __result)
-            {
-                if(!RealTimeCore.ApplyCitizenPatch)
-                {
-                    return;
-                }
-
-                if (__result && NewCitizenBehavior != null)
-                {
-                    // This method is called by the game in two cases only: a new child is born or a citizen joins the city.
-                    // So we tailor the age here.
-                    UpdateCitizenAge(citizen);
-                    UpdateCitizenEducation(citizen);
-                }
-            }
-        }
-
-        [HarmonyPatch]
-        private sealed class CitizenManager_CreateCitizen2
-        {
-            [HarmonyPatch(typeof(CitizenManager), "CreateCitizen",
-                [typeof(uint), typeof(int), typeof(int), typeof(Randomizer), typeof(Citizen.Gender)],
-                [ArgumentType.Out, ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Normal]
-            )]
-            [HarmonyPostfix]
-            private static void Postfix(ref uint citizen, bool __result)
-            {
-                if(!RealTimeCore.ApplyCitizenPatch)
-                {
-                    return;
-                }
-
-                if (__result && NewCitizenBehavior != null)
-                {
-                    UpdateCitizenEducation(citizen);
-                }
-            }
-        }
     }
 }
