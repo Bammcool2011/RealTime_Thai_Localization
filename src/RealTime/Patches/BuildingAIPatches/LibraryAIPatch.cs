@@ -5,6 +5,7 @@ namespace RealTime.Patches.BuildingAIPatches
     using RealTime.CustomAI;
     using UnityEngine;
 
+    [HarmonyPatch]
     internal class LibraryAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>

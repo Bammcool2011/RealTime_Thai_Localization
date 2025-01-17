@@ -3,6 +3,7 @@ namespace RealTime.Patches.BuildingAIPatches
     using HarmonyLib;
     using RealTime.CustomAI;
 
+    [HarmonyPatch]
     internal class MarketAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>

@@ -4,6 +4,7 @@ namespace RealTime.Patches.BuildingAIPatches
     using RealTime.Core;
     using RealTime.CustomAI;
 
+    [HarmonyPatch]
     internal class BuildingManagerPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>

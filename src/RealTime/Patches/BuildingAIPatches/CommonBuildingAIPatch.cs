@@ -9,6 +9,7 @@ namespace RealTime.Patches
     using ColossalFramework.Math;
     using System;
 
+    [HarmonyPatch]
     internal class CommonBuildingAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>

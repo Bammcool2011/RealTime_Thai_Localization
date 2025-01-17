@@ -4,6 +4,7 @@ namespace RealTime.Patches.BuildingAIPatches
     using HarmonyLib;
     using UnityEngine;
 
+    [HarmonyPatch]
     internal class FishingAIPatch
     {
         [HarmonyPatch(typeof(FishingHarborAI), "TrySpawnBoat")]

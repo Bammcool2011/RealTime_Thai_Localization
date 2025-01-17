@@ -12,6 +12,7 @@ namespace RealTime.Patches
     using RealTime.Managers;
     using UnityEngine;
 
+    [HarmonyPatch]
     internal class PrivateBuildingAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>

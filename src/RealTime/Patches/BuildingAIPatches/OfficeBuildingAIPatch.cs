@@ -8,6 +8,7 @@ namespace RealTime.Patches.BuildingAIPatches
     using ICities;
     using RealTime.CustomAI;
 
+    [HarmonyPatch]
     internal class OfficeBuildingAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>

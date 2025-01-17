@@ -2,6 +2,7 @@ namespace RealTime.Patches.BuildingAIPatches
 {
     using HarmonyLib;
 
+    [HarmonyPatch]
     internal class ShelterAIPatch
     {
         [HarmonyPatch(typeof(ShelterAI), "CreateBuilding")]

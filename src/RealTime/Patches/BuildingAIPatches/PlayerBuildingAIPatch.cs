@@ -9,6 +9,7 @@ namespace RealTime.Patches.BuildingAIPatches
     using RealTime.GameConnection;
     using RealTime.Managers;
 
+    [HarmonyPatch]
     internal class PlayerBuildingAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
@@ -37,12 +38,12 @@ namespace RealTime.Patches.BuildingAIPatches
                 if (BuildingManagerConnection.IsHotel(buildingID) && !HotelManager.HotelExist(buildingID))
                 {
                     HotelManager.AddHotel(buildingID);
-                }
+                } 
+            }
 
-                if (data.Info.GetAI() is MainCampusBuildingAI && !AcademicYearManager.MainCampusBuildingExist(buildingID))
-                {
-                    AcademicYearManager.CreateAcademicYearData(buildingID);
-                }
+            if (data.Info.GetAI() is MainCampusBuildingAI && !AcademicYearManager.MainCampusBuildingExist(buildingID))
+            {
+                AcademicYearManager.CreateAcademicYearData(buildingID);
             }
         }
 
@@ -70,11 +71,11 @@ namespace RealTime.Patches.BuildingAIPatches
                 {
                     HotelManager.AddHotel(buildingID);
                 }
+            }
 
-                if (data.Info.GetAI() is MainCampusBuildingAI && !AcademicYearManager.MainCampusBuildingExist(buildingID))
-                {
-                    AcademicYearManager.CreateAcademicYearDataExistingCampus(buildingID);
-                }
+            if (data.Info.GetAI() is MainCampusBuildingAI && !AcademicYearManager.MainCampusBuildingExist(buildingID))
+            {
+                AcademicYearManager.CreateAcademicYearDataExistingCampus(buildingID);
             }
         }
 
