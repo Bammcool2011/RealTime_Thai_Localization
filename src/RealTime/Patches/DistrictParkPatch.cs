@@ -260,6 +260,19 @@ namespace RealTime.Patches
             return false;
         }
 
+        [HarmonyPatch(typeof(DistrictPark), "GetAcademicYearProgress")]
+        [HarmonyPostfix]
+        public static bool GetAcademicYearProgress(DistrictPark __instance, ref float __result)
+        {
+            var academicYearData = AcademicYearManager.GetAcademicYearData(__instance.m_mainGate);
+            if (academicYearData.IsFirstAcademicYear)
+            {
+                __result = 0f;
+                return false;
+            }
+            return true;
+        }
+
         private static void EndTogaParty(DistrictPark __instance, byte parkID)
         {
             var instance2 = Singleton<DistrictManager>.instance;
