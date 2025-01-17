@@ -6,6 +6,8 @@ namespace RealTime.UI
     using ColossalFramework.UI;
     using ICities;
     using RealTime.Config;
+    using RealTime.CustomAI;
+    using RealTime.GameConnection;
     using RealTime.Localization;
     using RealTime.Managers;
     using SkyTools.Localization;
@@ -60,27 +62,22 @@ namespace RealTime.UI
         {
             ushort mainGate = DistrictManager.instance.m_parks.m_buffer[instance.Park].m_mainGate;
             ushort eventIndex = BuildingManager.instance.m_buildings.m_buffer[mainGate].m_eventIndex;
+
+            var academicYearData = AcademicYearManager.GetAcademicYearData(mainGate);
+
+            if (eventIndex == 0)
+            {
+                if (academicYearData.IsFirstAcademicYear)
+                {
+                    progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartDelay);
+                }
+                return;
+            }
+
             ref var eventData = ref EventManager.instance.m_events.m_buffer[eventIndex];
 
             if (eventData.Info.m_eventAI is not AcademicYearAI)
             {
-                return;
-            }
-
-            var academicYearData = AcademicYearManager.GetAcademicYearData(mainGate);
-
-            if (academicYearData.IsFirstAcademicYear)
-            {
-                float hours_since_campus_created = AcademicYearManager.CalculateHoursSinceCampusCreated(mainGate);
-                if (hours_since_campus_created >= 23f)
-                {
-                    progressTooltipLabel.text = localizationProvider.Translate(TranslationKeys.AcademicYearStartsSoon);
-                }
-                else
-                {
-                    string template = localizationProvider.Translate(TranslationKeys.AcademicYearHoursUntil);
-                    progressTooltipLabel.text = string.Format(template, Mathf.RoundToInt(24 - hours_since_campus_created));
-                }
                 return;
             }
 

@@ -33,7 +33,6 @@ namespace RealTime.Serializer
                 StorageData.WriteBool(kvp.Value.DidGraduationStart, Data);
                 StorageData.WriteFloat(kvp.Value.GraduationStartTime, Data);
                 StorageData.WriteUInt32(kvp.Value.ActualAcademicYearEndFrame, Data);
-                StorageData.WriteUInt32(kvp.Value.MainCampusBuildingCreateFrame, Data);
                 StorageData.WriteBool(kvp.Value.IsFirstAcademicYear, Data);
 
                 // Write end tuple
@@ -64,7 +63,6 @@ namespace RealTime.Serializer
                     bool DidGraduationStart = StorageData.ReadBool(Data, ref iIndex);
                     float GraduationStartTime = StorageData.ReadFloat(Data, ref iIndex);
                     uint ActualAcademicYearEndFrame = StorageData.ReadUInt32(Data, ref iIndex);
-                    uint MainCampusBuildingCreateFrame = StorageData.ReadUInt32(Data, ref iIndex);
                     bool IsFirstAcademicYear = StorageData.ReadBool(Data, ref iIndex);
 
                     var academicYearData = new AcademicYearManager.AcademicYearData()
@@ -73,7 +71,6 @@ namespace RealTime.Serializer
                         DidGraduationStart = DidGraduationStart,
                         GraduationStartTime = GraduationStartTime,
                         ActualAcademicYearEndFrame = ActualAcademicYearEndFrame,
-                        MainCampusBuildingCreateFrame = MainCampusBuildingCreateFrame,
                         IsFirstAcademicYear = IsFirstAcademicYear
                     };
 

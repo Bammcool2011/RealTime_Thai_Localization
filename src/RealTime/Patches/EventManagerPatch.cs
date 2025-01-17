@@ -36,7 +36,6 @@ namespace RealTime.Patches
                     eventIndex = (ushort)__instance.m_events.m_size;
 
                     bool can_start_new_year = false;
-                    // first year or not first year and 24 hours have passed since the last year ended
                     if (eventIndex != 0)
                     {
                         if (!RealTimeBuildingAI.IsBuildingWorking(building))
@@ -54,13 +53,9 @@ namespace RealTime.Patches
 
                         if(academicYearData.IsFirstAcademicYear)
                         {
-                            float hours_since_campus_created = AcademicYearManager.CalculateHoursSinceCampusCreated(building);
-                            if (hours_since_campus_created >= 24f)
-                            {
-                                can_start_new_year = true;
-                                academicYearData.IsFirstAcademicYear = false;
-                                AcademicYearManager.SetAcademicYearData(building, academicYearData);
-                            }
+                            can_start_new_year = true;
+                            academicYearData.IsFirstAcademicYear = false;
+                            AcademicYearManager.SetAcademicYearData(building, academicYearData);
                         }
                         else
                         {

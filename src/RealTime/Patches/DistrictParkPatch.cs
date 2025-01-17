@@ -261,7 +261,7 @@ namespace RealTime.Patches
         }
 
         [HarmonyPatch(typeof(DistrictPark), "GetAcademicYearProgress")]
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         public static bool GetAcademicYearProgress(DistrictPark __instance, ref float __result)
         {
             var academicYearData = AcademicYearManager.GetAcademicYearData(__instance.m_mainGate);
