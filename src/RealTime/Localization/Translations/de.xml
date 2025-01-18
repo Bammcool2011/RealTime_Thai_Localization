@@ -280,7 +280,7 @@
   <translation id="ConfirmPanelGlobalTitle" value="Set Global Settings" />
   <translation id="ConfirmPanelGlobalText" value="This will update all the buildings work hours of this type to the current work time settings across all saves!" />
   <translation id="ClosedBuilding" value="Closed" />
-  <translation id="ServingTimeAt" value="Serving time at " />
+  <translation id="ServingTimeAt" value="Serving time in " />
   
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="Kohle gespeichert für {0} × {unit}"/>

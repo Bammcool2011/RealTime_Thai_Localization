@@ -279,8 +279,8 @@
   <translation id="ConfirmPanelPrefabText" value="这将把当前存档中该类型的所有建筑工作时间更新为当前工作时间！" />
   <translation id="ConfirmPanelGlobalTitle" value="设置全局设置" />
   <translation id="ConfirmPanelGlobalText" value="这将把所有存档中该类型的所有建筑工作时间更新为当前工作时间！" />
-  <translation id="ClosedBuilding" value="Closed" />
-  <translation id="ServingTimeAt" value="Serving time at " />
+  <translation id="ClosedBuilding" value="已关闭" />
+  <translation id="ServingTimeAt" value="服刑于" />
 
   <overrides type="Units">
     <translation id="AIINFO_COAL_STORED" value="煤炭储存 {0} × {unit}"/>

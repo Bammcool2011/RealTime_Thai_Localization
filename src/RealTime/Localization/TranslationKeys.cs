@@ -190,7 +190,7 @@ namespace RealTime.Localization
         /// <summary>The key for the closed text on buildings.</summary>
         public const string ClosedBuilding = "ClosedBuilding";
 
-        /// <summary>The key for the prisoners serving time at a prison.</summary>
+        /// <summary>The key for the prisoners Serving time in prison.</summary>
         public const string ServingTimeAt = "ServingTimeAt";
     }
 }
