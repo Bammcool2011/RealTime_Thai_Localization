@@ -178,6 +178,10 @@ namespace RealTime.Core
 
             SimulationHandler.Statistics = statistics;
 
+            PlayerBuildingAIPatch.localizationProvider = localizationProvider;
+            PrivateBuildingAIPatch.localizationProvider = localizationProvider;
+            PrisonerAIPatch.localizationProvider = localizationProvider;
+
             WorldInfoPanelPatch.CitizenInfoPanel = CustomCitizenInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
             WorldInfoPanelPatch.VehicleInfoPanel = CustomVehicleInfoPanel.Enable(ResidentAIPatch.RealTimeResidentAI, localizationProvider, timeInfo);
             WorldInfoPanelPatch.CampusWorldInfoPanel = CustomCampusWorldInfoPanel.Enable(localizationProvider, configProvider.Configuration);
