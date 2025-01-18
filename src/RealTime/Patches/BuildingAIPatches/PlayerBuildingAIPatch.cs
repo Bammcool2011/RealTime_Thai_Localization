@@ -8,12 +8,17 @@ namespace RealTime.Patches.BuildingAIPatches
     using RealTime.CustomAI;
     using RealTime.GameConnection;
     using RealTime.Managers;
+    using SkyTools.Localization;
+    using RealTime.Localization;
 
     [HarmonyPatch]
     internal class PlayerBuildingAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
+
+        /// <summary>Gets or sets the mod localization.</summary>
+        public static ILocalizationProvider localizationProvider { get; set; }
 
         [HarmonyPatch(typeof(PlayerBuildingAI), "CreateBuilding")]
         [HarmonyPrefix]
@@ -119,7 +124,7 @@ namespace RealTime.Patches.BuildingAIPatches
         {
             if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
-                __result = "Closed";
+                __result = localizationProvider.Translate(TranslationKeys.ClosedBuilding);
             }
         }
 

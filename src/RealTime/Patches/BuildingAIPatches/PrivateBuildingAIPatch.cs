@@ -11,12 +11,17 @@ namespace RealTime.Patches
     using RealTime.GameConnection;
     using RealTime.Managers;
     using UnityEngine;
+    using SkyTools.Localization;
+    using RealTime.Localization;
 
     [HarmonyPatch]
     internal class PrivateBuildingAIPatch
     {
         /// <summary>Gets or sets the custom AI object for buildings.</summary>
         public static RealTimeBuildingAI RealTimeBuildingAI { get; set; }
+
+        /// <summary>Gets or sets the mod localization.</summary>
+        public static ILocalizationProvider localizationProvider { get; set; }
 
         private delegate void CommonBuildingAICreateBuildingDelegate(CommonBuildingAI __instance, ushort buildingID, ref Building data);
         private static readonly CommonBuildingAICreateBuildingDelegate BaseCreateBuilding = AccessTools.MethodDelegate<CommonBuildingAICreateBuildingDelegate>(typeof(CommonBuildingAI).GetMethod("CreateBuilding", BindingFlags.Instance | BindingFlags.Public), null, false);
@@ -205,7 +210,7 @@ namespace RealTime.Patches
         {
             if (RealTimeBuildingAI != null && !RealTimeBuildingAI.IsBuildingWorking(buildingID))
             {
-                __result = "Closed";
+                __result = localizationProvider.Translate(TranslationKeys.ClosedBuilding);
             }
         }
 

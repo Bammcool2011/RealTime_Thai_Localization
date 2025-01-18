@@ -186,5 +186,11 @@ namespace RealTime.Localization
 
         /// <summary>The key for the global confirm panel text.</summary>
         public const string ConfirmPanelGlobalText = "ConfirmPanelGlobalText";
+
+        /// <summary>The key for the closed text on buildings.</summary>
+        public const string ClosedBuilding = "ClosedBuilding";
+
+        /// <summary>The key for the prisoners serving time at a prison.</summary>
+        public const string ServingTimeAt = "ServingTimeAt";
     }
 }

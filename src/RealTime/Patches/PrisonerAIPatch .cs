@@ -4,10 +4,15 @@ namespace RealTime.Patches
 {
     using ColossalFramework;
     using HarmonyLib;
+    using RealTime.Localization;
+    using SkyTools.Localization;
 
-    [HarmonyPatch(typeof(PrisonerAI))]
+    [HarmonyPatch]
     public static class PrisonerAIPatch
     {
+        /// <summary>Gets or sets the mod localization.</summary>
+        public static ILocalizationProvider localizationProvider { get; set; }
+
         [HarmonyPatch(typeof(PrisonerAI), "GetLocalizedStatus",
             [typeof(ushort), typeof(CitizenInstance), typeof(InstanceID)],
             [ArgumentType.Normal, ArgumentType.Ref, ArgumentType.Out])]
@@ -19,7 +24,7 @@ namespace RealTime.Patches
             {
                 target = InstanceID.Empty;
                 target.Building = targetBuilding;
-                __result = "Serving time at ";
+                __result = localizationProvider.Translate(TranslationKeys.ServingTimeAt);
             }
             else
             {
@@ -43,7 +48,7 @@ namespace RealTime.Patches
             {
                 target = InstanceID.Empty;
                 target.Building = data.m_visitBuilding;
-                __result = "Serving time at ";
+                __result = localizationProvider.Translate(TranslationKeys.ServingTimeAt);
             }
             else
             {
