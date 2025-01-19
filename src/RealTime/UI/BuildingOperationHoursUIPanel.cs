@@ -5,6 +5,7 @@ namespace RealTime.UI
     using ColossalFramework.UI;
     using RealTime.Config;
     using RealTime.CustomAI;
+    using RealTime.GameConnection;
     using RealTime.Localization;
     using RealTime.Managers;
     using RealTime.Utils;
@@ -393,7 +394,7 @@ namespace RealTime.UI
             var service = building.Info.GetService();
             var sub_service = building.Info.GetSubService();
             var instance = Singleton<DistrictManager>.instance;
-            bool IsAllowedZonedCommercial = buildingAI is CommercialBuildingAI && service == ItemClass.Service.Commercial && sub_service != ItemClass.SubService.CommercialTourist;
+            bool IsAllowedZonedCommercial = buildingAI is CommercialBuildingAI && service == ItemClass.Service.Commercial && !BuildingManagerConnection.IsHotel(buildingID);
             bool IsAllowedZonedGeneral = buildingAI is IndustrialBuildingAI || buildingAI is IndustrialExtractorAI || buildingAI is OfficeBuildingAI;
             bool isAllowedCityService = buildingAI is BankOfficeAI || buildingAI is PostOfficeAI || buildingAI is SaunaAI || buildingAI is TourBuildingAI || buildingAI is MonumentAI || buildingAI is MarketAI || buildingAI is LibraryAI;
             bool isAllowedParkBuilding = buildingAI is ParkBuildingAI && instance.GetPark(building.m_position) == 0 && !CarParkingBuildings.Any(s => building.Info.name.Contains(s));

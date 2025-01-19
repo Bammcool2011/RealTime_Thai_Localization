@@ -504,7 +504,8 @@ namespace RealTime.Managers
                     }
                     return;
 
-                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialTourist:
+                case ItemClass.Service.Commercial when BuildingManagerConnection.IsHotel(buildingId):
+                case ItemClass.Service.Hotel when BuildingManagerConnection.IsHotel(buildingId):
                     if (!workTime.WorkAtNight)
                     {
                         workTime.WorkShifts = 3;
@@ -517,7 +518,7 @@ namespace RealTime.Managers
                     }
                     return;
 
-                case ItemClass.Service.Commercial when subService == ItemClass.SubService.CommercialLeisure && !workTime.IgnorePolicy && workTime.IsDefault:
+                case ItemClass.Service.Commercial when (subService == ItemClass.SubService.CommercialLeisure || subService == ItemClass.SubService.CommercialTourist) && !workTime.IgnorePolicy && workTime.IsDefault:
                     bool isNoiseRestricted = BuildingManagerConnection.IsBuildingNoiseRestricted(buildingId);
                     bool updated = false;
                     if (isNoiseRestricted)
