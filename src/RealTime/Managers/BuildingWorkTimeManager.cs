@@ -365,7 +365,7 @@ namespace RealTime.Managers
                 // area main building works 24/7, universities work 2 shifts for night school support
                 case ItemClass.Service.PlayerEducation:
                 case ItemClass.Service.Education when level == ItemClass.Level.Level3:
-                    if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
+                    if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) && (workTime.WorkShifts != 3 || !workTime.WorkAtNight || !workTime.WorkAtWeekands))
                     {
                         workTime.WorkShifts = 3;
                         workTime.WorkAtNight = true;
@@ -403,7 +403,7 @@ namespace RealTime.Managers
 
                 // open or close farming or forestry buildings according to the advanced automation policy, set 24/7 for main buildings
                 case ItemClass.Service.PlayerIndustry:
-                    if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) && workTime.WorkShifts != 3)
+                    if (BuildingManagerConnection.IsAreaMainBuilding(buildingId) && (workTime.WorkShifts != 3 || !workTime.WorkAtNight || !workTime.WorkAtWeekands))
                     {
                         workTime.WorkShifts = 3;
                         workTime.WorkAtNight = true;
