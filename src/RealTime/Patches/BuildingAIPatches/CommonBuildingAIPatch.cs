@@ -1,4 +1,4 @@
-namespace RealTime.Patches
+namespace RealTime.Patches.BuildingAIPatches
 {
     using System.Reflection;
     using HarmonyLib;
@@ -421,7 +421,7 @@ namespace RealTime.Patches
                 if ((policies & DistrictPolicies.Services.FreeWifi) != 0)
                 {
                     mailAccumulation = (mailAccumulation * 17 + Singleton<SimulationManager>.instance.m_randomizer.Int32(80u)) / 80;
-                    if ((buildingID & (Singleton<SimulationManager>.instance.m_currentFrameIndex >> 8) & (true ? 1u : 0u)) != 0)
+                    if ((buildingID & Singleton<SimulationManager>.instance.m_currentFrameIndex >> 8 & (true ? 1u : 0u)) != 0)
                     {
                         Singleton<EconomyManager>.instance.FetchResource(EconomyManager.Resource.PolicyCost, 13, __instance.m_info.m_class);
                     }
@@ -528,7 +528,7 @@ namespace RealTime.Patches
                         data.m_levelUpProgress = 0;
                         data.m_fireIntensity = 0;
                         data.m_garbageBuffer = 0;
-                        data.m_flags = (data.m_flags & (Building.Flags.ContentMask | Building.Flags.IncomingOutgoing | Building.Flags.CapacityFull | Building.Flags.Created | Building.Flags.Deleted | Building.Flags.Original | Building.Flags.CustomName | Building.Flags.Untouchable | Building.Flags.FixedHeight | Building.Flags.RateReduced | Building.Flags.HighDensity | Building.Flags.RoadAccessFailed | Building.Flags.Evacuating | Building.Flags.Completed | Building.Flags.Active | Building.Flags.Abandoned | Building.Flags.Demolishing | Building.Flags.ZonesUpdated | Building.Flags.Downgrading | Building.Flags.Collapsed | Building.Flags.Upgrading | Building.Flags.SecondaryLoading | Building.Flags.Hidden | Building.Flags.EventActive | Building.Flags.Flooded | Building.Flags.Filling)) | Building.Flags.Collapsed;
+                        data.m_flags = data.m_flags & (Building.Flags.ContentMask | Building.Flags.IncomingOutgoing | Building.Flags.CapacityFull | Building.Flags.Created | Building.Flags.Deleted | Building.Flags.Original | Building.Flags.CustomName | Building.Flags.Untouchable | Building.Flags.FixedHeight | Building.Flags.RateReduced | Building.Flags.HighDensity | Building.Flags.RoadAccessFailed | Building.Flags.Evacuating | Building.Flags.Completed | Building.Flags.Active | Building.Flags.Abandoned | Building.Flags.Demolishing | Building.Flags.ZonesUpdated | Building.Flags.Downgrading | Building.Flags.Collapsed | Building.Flags.Upgrading | Building.Flags.SecondaryLoading | Building.Flags.Hidden | Building.Flags.EventActive | Building.Flags.Flooded | Building.Flags.Filling) | Building.Flags.Collapsed;
                         num = 0;
                         RemovePeople(__instance, buildingID, ref data, 90);
                         __instance.BuildingDeactivated(buildingID, ref data);
@@ -636,13 +636,13 @@ namespace RealTime.Patches
                     num = UniqueFacultyAI.DecreaseByBonus(UniqueFacultyAI.FacultyBonus.Science, num);
                     Singleton<NaturalResourceManager>.instance.TryDumpResource(NaturalResourceManager.Resource.Pollution, num, num, buildingData.m_position, 0f);
                 }
-                int num2 = (__instance is not MainCampusBuildingAI && __instance is not ParkGateAI && __instance is not MainIndustryBuildingAI) ? 3 : 4;
+                int num2 = __instance is not MainCampusBuildingAI && __instance is not ParkGateAI && __instance is not MainIndustryBuildingAI ? 3 : 4;
                 if (num >= num2)
                 {
                     if (Singleton<UnlockManager>.instance.Unlocked(ItemClass.Service.Garbage))
                     {
-                        int num3 = (__instance is not MainCampusBuildingAI && __instance is not ParkGateAI && __instance is not MainIndustryBuildingAI) ? 6 : 8;
-                        problemStruct = (num < num3) ? Notification.AddProblems(problemStruct, Notification.Problem1.Garbage) : Notification.AddProblems(problemStruct, Notification.Problem1.Garbage | Notification.Problem1.MajorProblem);
+                        int num3 = __instance is not MainCampusBuildingAI && __instance is not ParkGateAI && __instance is not MainIndustryBuildingAI ? 6 : 8;
+                        problemStruct = num < num3 ? Notification.AddProblems(problemStruct, Notification.Problem1.Garbage) : Notification.AddProblems(problemStruct, Notification.Problem1.Garbage | Notification.Problem1.MajorProblem);
                         var properties = Singleton<GuideManager>.instance.m_properties;
                         if (properties is not null)
                         {
@@ -717,7 +717,7 @@ namespace RealTime.Patches
             }
             var r = new Randomizer(buildingID);
             var randomPropInfo = Singleton<PropManager>.instance.GetRandomPropInfo(ref r, ItemClass.Service.Garbage);
-            if (randomPropInfo is null || (layerMask & (1 << randomPropInfo.m_prefabDataLayer)) == 0 || randomPropInfo.m_requireHeightMap)
+            if (randomPropInfo is null || (layerMask & 1 << randomPropInfo.m_prefabDataLayer) == 0 || randomPropInfo.m_requireHeightMap)
             {
                 return false;
             }
@@ -992,7 +992,7 @@ namespace RealTime.Patches
             }
             if (data.m_fireIntensity != 0)
             {
-                int num5 = (fireTolerance == 0) ? 255 : ((data.m_fireIntensity + fireTolerance) / fireTolerance + 3 >> 2);
+                int num5 = fireTolerance == 0 ? 255 : (data.m_fireIntensity + fireTolerance) / fireTolerance + 3 >> 2;
                 if (num5 != 0)
                 {
                     num5 = Singleton<SimulationManager>.instance.m_randomizer.Int32(1, num5);
@@ -1045,7 +1045,7 @@ namespace RealTime.Patches
                         data.m_levelUpProgress = 0;
                         data.m_fireIntensity = 0;
                         data.m_garbageBuffer = 0;
-                        data.m_flags = (data.m_flags & (Building.Flags.ContentMask | Building.Flags.IncomingOutgoing | Building.Flags.CapacityFull | Building.Flags.Created | Building.Flags.Deleted | Building.Flags.Original | Building.Flags.CustomName | Building.Flags.Untouchable | Building.Flags.FixedHeight | Building.Flags.RateReduced | Building.Flags.HighDensity | Building.Flags.RoadAccessFailed | Building.Flags.Evacuating | Building.Flags.Completed | Building.Flags.Active | Building.Flags.Abandoned | Building.Flags.Demolishing | Building.Flags.ZonesUpdated | Building.Flags.Downgrading | Building.Flags.Collapsed | Building.Flags.Upgrading | Building.Flags.SecondaryLoading | Building.Flags.Hidden | Building.Flags.EventActive | Building.Flags.Flooded | Building.Flags.Filling)) | Building.Flags.Collapsed;
+                        data.m_flags = data.m_flags & (Building.Flags.ContentMask | Building.Flags.IncomingOutgoing | Building.Flags.CapacityFull | Building.Flags.Created | Building.Flags.Deleted | Building.Flags.Original | Building.Flags.CustomName | Building.Flags.Untouchable | Building.Flags.FixedHeight | Building.Flags.RateReduced | Building.Flags.HighDensity | Building.Flags.RoadAccessFailed | Building.Flags.Evacuating | Building.Flags.Completed | Building.Flags.Active | Building.Flags.Abandoned | Building.Flags.Demolishing | Building.Flags.ZonesUpdated | Building.Flags.Downgrading | Building.Flags.Collapsed | Building.Flags.Upgrading | Building.Flags.SecondaryLoading | Building.Flags.Hidden | Building.Flags.EventActive | Building.Flags.Flooded | Building.Flags.Filling) | Building.Flags.Collapsed;
                         RemovePeople(__instance, buildingID, ref data, 90);
                         __instance.BuildingDeactivated(buildingID, ref data);
                         if (__instance is CampusBuildingAI campusBuildingAI)
@@ -1212,7 +1212,7 @@ namespace RealTime.Patches
                         BlockSegmentsOnBothSides(pathPos);
                     }
                     float num10 = VectorUtils.LengthXZ(__instance.m_info.m_size) * 0.5f;
-                    int num11 = Mathf.Max(10, Mathf.RoundToInt((float)(int)data.m_fireIntensity * Mathf.Min(1f, num10 / 33.75f)));
+                    int num11 = Mathf.Max(10, Mathf.RoundToInt(data.m_fireIntensity * Mathf.Min(1f, num10 / 33.75f)));
                     Singleton<NaturalResourceManager>.instance.TryDumpResource(NaturalResourceManager.Resource.Burned, num11, num11, data.m_position, num10, refresh: true);
                 }
                 return false;

@@ -1,4 +1,6 @@
-namespace RealTime.Patches
+// ParkAIPatch.cs
+
+namespace RealTime.Patches.BuildingAIPatches
 {
     using ColossalFramework;
     using HarmonyLib;
@@ -89,7 +91,7 @@ namespace RealTime.Patches
 
         private static void GetMaintenanceLevel(ushort buildingID, ref Building data, out int current, out int max)
         {
-            current = (data.m_workerProblemTimer << 8) | data.m_taxProblemTimer;
+            current = data.m_workerProblemTimer << 8 | data.m_taxProblemTimer;
             max = 3000;
         }
     }

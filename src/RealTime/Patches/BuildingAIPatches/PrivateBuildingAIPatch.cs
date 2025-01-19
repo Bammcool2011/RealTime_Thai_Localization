@@ -1,4 +1,6 @@
-namespace RealTime.Patches
+// PrivateBuildingAIPatch.cs
+
+namespace RealTime.Patches.BuildingAIPatches
 {
     using System;
     using System.Reflection;
