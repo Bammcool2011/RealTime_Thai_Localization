@@ -35,7 +35,7 @@ namespace RealTime.Patches
         {
             IsInAddConnectionOffers = true;
 
-            if (!Compatibility.IsAnyModActive(WorkshopMods.AdvancedOutsideConnections))
+            if (Compatibility != null && !Compatibility.IsAnyModActive(WorkshopMods.AdvancedOutsideConnections))
             {
                 touristFactor0 = 325;
                 touristFactor1 = 125;
